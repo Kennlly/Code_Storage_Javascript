@@ -15,7 +15,7 @@ import { basicQueryPattern, buildConnection, closeConnection } from "./index.js"
 //       if (result["recordset"][0].hasOwnProperty("Succeed")) return true;
 //
 //       const msg = result["recordset"][0]["ErrorMsg"];
-//       generalLogger.error(`jsonInsertionPattern Func - Error msg from database: ${msg}`);
+//       generalLogger.error(`jsonInsertionPattern Func - Error msg from MsSQL: ${msg}`);
 //
 //       return false;
 //    } catch (err) {

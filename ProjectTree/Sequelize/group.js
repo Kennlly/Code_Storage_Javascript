@@ -1,6 +1,6 @@
-import { generalLogger } from "../../utils/loggerConfig.js";
+import {generalLogger} from "../utils/loggerConfig.js";
 import Moment from "moment";
-import { DataTypes } from "sequelize";
+import {DataTypes} from "sequelize";
 
 export default async function extractAndInsertGroup(payload, sequelize) {
    try {
@@ -11,24 +11,24 @@ export default async function extractAndInsertGroup(payload, sequelize) {
       if (groupModel === false) return false;
 
       await Promise.all(
-         groupData.map((data) =>
-            groupModel.upsert(data, {
-               updateOnDuplicate: [
-                  "group_name",
-                  "description",
-                  "date_modified",
-                  "member_count",
-                  "state",
-                  "version",
-                  "type",
-                  "is_rules_visible",
-                  "visibility",
-                  "chat_jabber_id",
-                  "owners",
-                  "stage_time",
-               ],
-            })
-         )
+          groupData.map((data) =>
+              groupModel.upsert(data, {
+                 updateOnDuplicate: [
+                    "group_name",
+                    "description",
+                    "date_modified",
+                    "member_count",
+                    "state",
+                    "version",
+                    "type",
+                    "is_rules_visible",
+                    "visibility",
+                    "chat_jabber_id",
+                    "owners",
+                    "stage_time",
+                 ],
+              })
+          )
       );
 
       return true;
@@ -87,7 +87,9 @@ const DefineGroup = (sequelize) => {
          description: {
             type: DataTypes.STRING(255),
             set(value) {
-               value ? this.setDataValue("description", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)) : null;
+               value ? this.setDataValue("description",
+                   value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
+               ) : null;
             },
          },
          date_modified: {
@@ -105,7 +107,9 @@ const DefineGroup = (sequelize) => {
          state: {
             type: DataTypes.STRING(255),
             set(value) {
-               value ? this.setDataValue("state", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)) : null;
+               value ? this.setDataValue("state",
+                   value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
+               ) : null;
             },
          },
          version: {
@@ -117,7 +121,9 @@ const DefineGroup = (sequelize) => {
          type: {
             type: DataTypes.STRING(255),
             set(value) {
-               value ? this.setDataValue("type", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)) : null;
+               value ? this.setDataValue("type",
+                   value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
+               ) : null;
             },
          },
          is_rules_visible: {
@@ -129,15 +135,19 @@ const DefineGroup = (sequelize) => {
          visibility: {
             type: DataTypes.STRING(255),
             set(value) {
-               value ? this.setDataValue("visibility", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)) : null;
+               value ? this.setDataValue("visibility",
+                   value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
+               ) : null;
             },
          },
          chat_jabber_id: {
             type: DataTypes.STRING(255),
             set(value) {
                value
-                  ? this.setDataValue("chat_jabber_id", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255))
-                  : null;
+                   ? this.setDataValue("chat_jabber_id",
+                       value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
+                   )
+                   : null;
             },
          },
          addresses: {
@@ -161,7 +171,7 @@ const DefineGroup = (sequelize) => {
             },
          },
          stage_time: {
-            // If using the "Date" type, it converses to UTC by the sequelize
+            // If using the "Date" type, it converses to UTC by the "Sequelize"
             type: DataTypes.STRING(26),
             allowNull: false,
             // defaultValue: DataTypes.NOW,
@@ -171,35 +181,7 @@ const DefineGroup = (sequelize) => {
          },
       });
    } catch (err) {
-      generalLogger.error(`DefineGroup Func - ${err}`);
+      generalLogger.error(`DefineGroup Func Catching ERROR - ${err}`);
       return false;
    }
 };
-
-// const groupModel = Group(sequelize);
-// await groupModel.sync({ force: true });
-// try {
-//    await groupModel.create({
-//       group_id: "62316dbd-8ab6-4cf8-83d7-2dbcc318ca07",
-//       group_name: "Airlock389CustomerSupportOrg",
-//       date_modified: "2023-01-19T15:18:42Z",
-//       member_count: 2,
-//       state: "active",
-//       version: 3,
-//       type: "official",
-//       is_rules_visible: true,
-//       visibility: "members",
-//       chat_jabber_id: "63c95f28e95eaf1b56ea76e4@conference.nttm1s.orgspan.com",
-//       owners: [
-//          {
-//             id: "5fe9a50b-e419-40cb-9d5a-94828d10630d",
-//             selfUri: "/api/v2/users/5fe9a50b-e419-40cb-9d5a-94828d10630d",
-//          },
-//       ],
-//       selfUri: "/api/v2/groups/62316dbd-8ab6-4cf8-83d7-2dbcc318ca07",
-//    });
-// } catch (err) {
-//    generalLogger.error(`Testing sequelize validation Func - ${err}.`);
-// }
-// const result = Group(sequelize);
-// console.log("Working? sequelize: ", sequelize);

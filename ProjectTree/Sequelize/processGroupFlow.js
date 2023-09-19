@@ -1,7 +1,7 @@
 import { generalLogger } from "../utils/loggerConfig.js";
 import { fetchLookupPattern } from "../apis/patterns/index.js";
-import buildInstance from "../models/Sequelize/buildInstance.js";
-import extractAndInsertGroup from "../models/Sequelize/group.js";
+import buildInstance from "./buildInstance.js";
+import extractAndInsertGroup from "./group.js";
 
 export default async function processGroupFlow() {
    try {
@@ -9,7 +9,7 @@ export default async function processGroupFlow() {
       const data = await fetchLookupPattern("/api/v2/groups?pageSize=500");
       if (data === false) return false;
 
-      // Step 2: Building database instance, it should be done before this subtask
+      // Step 2: Building MsSQL instance, it should be done before this subtask
       const sequelize = await buildInstance();
       if (sequelize === false) return false;
 
@@ -23,7 +23,7 @@ export default async function processGroupFlow() {
       generalLogger.error("processGroupFlow Func ERROR!");
       return false;
    } catch (err) {
-      generalLogger.error(`processGroupFlow Func ${err}`);
+      generalLogger.error(`processGroupFlow Func Catching ERROR - ${err}`);
       return false;
    }
 }

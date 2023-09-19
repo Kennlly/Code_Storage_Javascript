@@ -5,7 +5,7 @@ import { buildConnection, closeConnection } from "./index.js";
 // export default async function basicQueryPattern(databasePoolInfo, databaseQuery) {
 //    const funcNote = `Database Pool Info = ${databasePoolInfo}; Database Query = \n${JSON.stringify(databaseQuery)}`;
 //    if (!databasePoolInfo) {
-//       generalLogger.error(`dbQueryPattern Func - No database connection! ${funcNote}`);
+//       generalLogger.error(`dbQueryPattern Func - No MsSQL connection! ${funcNote}`);
 //       return false;
 //    }
 //
