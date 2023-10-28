@@ -1,4 +1,4 @@
-import moment from "moment";
+import Moment from "moment";
 
 const defineDBQueryInterval = async (category, initialInterval, QUARTERLY_JOB_DB_INFO) => {
    let funcNote = `Category = ${category}. Initial interval = ${initialInterval}.`;
@@ -45,7 +45,7 @@ const defineDBQueryInterval = async (category, initialInterval, QUARTERLY_JOB_DB
       const momentTimestampFromSource = moment.utc(
          timestampFromSource.recordset[0].TimestampFromSource,
          "YYYY-MM-DD HH:mm:ss.SSS",
-         true
+         true,
       );
 
       const timestampFromSourceStr = momentTimestampFromSource.format("YYYY-MM-DD HH:mm");
@@ -69,7 +69,7 @@ const defineDBQueryInterval = async (category, initialInterval, QUARTERLY_JOB_DB
 
       if (timeDiff < 0)
          throw new Error(
-            `${storeTableName} has "Source" less than "Store" result! Source timestamp = ${definedEndTime}, store timestamp = ${definedStartTime}.`
+            `${storeTableName} has "Source" less than "Store" result! Source timestamp = ${definedEndTime}, store timestamp = ${definedStartTime}.`,
          );
 
       if (timeDiff === 0) {
@@ -89,7 +89,7 @@ const defineStartEndTime = async (interval, timestampRecordFileName) => {
    try {
       if (interval && timestampRecordFileName) {
          generalLogger.error(
-            `defineStartEndTime Func - Interval and Timestamp record file name should NOT be provided at the same time! ${funcNote}`
+            `defineStartEndTime Func - Interval and Timestamp record file name should NOT be provided at the same time! ${funcNote}`,
          );
          return false;
       }
@@ -121,28 +121,6 @@ const defineStartEndTime = async (interval, timestampRecordFileName) => {
    }
 };
 
-// const backwardTimestamp = (timestamp) => {
-//    try {
-//       if (!timestamp) {
-//          generalLogger.error(`backwardTimestamp Func - Parameter "timeStamp" is Required! Timestamp = ${timestamp}.`);
-//          return false;
-//       }
-//
-//       const timestampArr = timestamp.split(" ");
-//       const dateStr = timestampArr[0].replace(/-/g, "");
-//       const timeArr = timestampArr[1].split(":");
-//       const hourStr = timeArr[0];
-//       const minute = Number(timeArr[1]);
-//       const minuteStr = minute >= 30 ? "30" : "00";
-//
-//       return `${dateStr}T${hourStr}${minuteStr}`;
-//    } catch (err) {
-//       generalLogger.error(`backwardTimestamp Func ${err}. Timestamp = ${timestamp}.`);
-//       return false;
-//    }
-// };
-
-//Improving
 const backwardTimestamp = (context, momentTimestamp) => {
    try {
       if (!momentTimestamp) {
@@ -179,98 +157,3 @@ const forwardTimestamp = (timestamp) => {
       return false;
    }
 };
-
-const adjustIntervalAsHalfHour = (startTimestamp, endTimestamp) => {
-   const funcNote = `StartTimestamp = ${startTimestamp}, EndTimestamp = ${endTimestamp}.`;
-   try {
-      const momentStartTime = moment(startTimestamp, "YYYY-MM-DDTHH:mm[Z]", true);
-      const isMomentStartTimeValid = momentStartTime.isValid();
-      const momentEndTime = moment(endTimestamp, "YYYY-MM-DDTHH:mm[Z]", true);
-      const isMomentEndTimeValid = momentEndTime.isValid();
-      if (!isMomentStartTimeValid || !isMomentEndTimeValid) {
-         modelLogger.error(
-            `adjustIntervalAsHalfHour Func - Not valid datetime format! Please input datetime format as: "YYYY-MM-DDTHH:mmZ" ${funcNote}`
-         );
-         return false;
-      }
-
-      const diff = momentEndTime.diff(momentStartTime);
-      if (diff < 0) {
-         modelLogger.error(`adjustIntervalAsHalfHour Func - End time is EARLIER than start time!`);
-         return false;
-      }
-
-      let leftMoment = momentStartTime.clone();
-
-      let definedIntervalArr = [];
-      while (leftMoment < momentEndTime) {
-         const tempRightMoment = leftMoment.clone().add(30, "minute");
-         const rightMoment = tempRightMoment < momentEndTime ? tempRightMoment : momentEndTime;
-         const leftMomentStr = leftMoment.format("YYYY-MM-DDTHH:mm[Z]");
-         const rightMomentStr = rightMoment.format("YYYY-MM-DDTHH:mm[Z]");
-         definedIntervalArr.push(`${leftMomentStr}/${rightMomentStr}`);
-
-         leftMoment = rightMoment;
-      }
-
-      return definedIntervalArr;
-   } catch (err) {
-      modelLogger.error(`adjustIntervalAsHalfHour Func ${err}. ${funcNote}`);
-      return false;
-   }
-};
-
-//Improving
-export default function defineIntervals(startTime, endTime, requireIntervalInMin) {
-   const funcNote = `Start timestamp = ${startTime}; End timestamp = ${endTime}; RequireIntervalInMin = ${requireIntervalInMin}.`;
-   if (!startTime || !endTime || !requireIntervalInMin) {
-      generalLogger.error(
-         `defineIntervals Func - Unexpected EMPTY "start timestamp" and/or "end timestamp" and/or "require interval in minutes" parameters ERROR! ${funcNote}`
-      );
-      return false;
-   }
-
-   try {
-      const momentStartTimestamp = moment.utc(startTime, "YYYY-MM-DDTHH:mm[Z]", true);
-      const isStartValid = momentStartTimestamp.isValid();
-      const momentEndTimestamp = moment.utc(endTime, "YYYY-MM-DDTHH:mm[Z]", true);
-      const isEndValid = momentEndTimestamp.isValid();
-      if (!isStartValid || !isEndValid) {
-         generalLogger.error(`defineIntervals Func - Invalid startTime and/or endTime ERROR! ${funcNote}`);
-         return false;
-      }
-
-      const diff = momentEndTimestamp.diff(momentStartTimestamp, "minute");
-
-      if (diff < 0) {
-         generalLogger.error(`defineIntervals Func - End time is EARLIER than start time!`);
-         return false;
-      }
-
-      if (diff <= requireIntervalInMin) {
-         const momentEndTime = momentStartTimestamp.clone().add(requireIntervalInMin, "minute");
-         const startStr = momentStartTimestamp.format("YYYY-MM-DDTHH:mm[Z]");
-         const endStr = momentEndTime.format("YYYY-MM-DDTHH:mm[Z]");
-
-         return [`${startStr}/${endStr}`];
-      }
-
-      let leftMoment = momentStartTimestamp.clone();
-
-      let definedIntervals = [];
-      while (leftMoment < momentEndTimestamp) {
-         const tempRightMoment = leftMoment.clone().add(requireIntervalInMin, "minute");
-         const rightMoment = tempRightMoment < momentEndTimestamp ? tempRightMoment : momentEndTimestamp;
-         const startStr = leftMoment.format("YYYY-MM-DDTHH:mm[Z]");
-         const endStr = rightMoment.format("YYYY-MM-DDTHH:mm[Z]");
-         definedIntervals.push(`${startStr}/${endStr}`);
-
-         leftMoment = rightMoment;
-      }
-
-      return definedIntervals;
-   } catch (err) {
-      generalLogger.error(`defineIntervals Func ${err}. ${funcNote}`);
-      return false;
-   }
-}

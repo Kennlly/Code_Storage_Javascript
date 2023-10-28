@@ -1,12 +1,12 @@
 import Schedule from "node-schedule";
 import { APP_RUNNING_ENV } from "../../utils/constants.js";
 import generalLogger from "../../utils/loggerConfig.js";
-import zipLogFiles from "../../controllers/fileControllers/zipLogFiles.js";
+import zipFolder from "../../controllers/fileControllers/zipFolder.js";
 import integrateMainDailyJob from "./integrateMainDailyJob.js";
 
 Schedule.scheduleJob("0 3 10 * *", async () => {
-   const zipMainPromise = zipLogFiles("Main");
-   const zipModelPromise = zipLogFiles("Model");
+   const zipMainPromise = zipFolder("Main");
+   const zipModelPromise = zipFolder("Model");
    await Promise.all([zipMainPromise, zipModelPromise]);
 });
 

@@ -1,9 +1,9 @@
 // npm install ip
-import ip from "ip";
+import Ip from "ip";
 // npm i dotenv
-import * as dotenv from "dotenv";
-import * as path from "path";
-import crypto from "crypto";
+import * as Dotenv from "dotenv";
+import * as Path from "path";
+import Crypto from "crypto";
 
 const detectEnv = () => {
    const ipAddress = ip.address();
@@ -34,10 +34,11 @@ const defineProjectFolder = () => {
 };
 const PROJECT_FOLDER = defineProjectFolder();
 
-const LOGS_FOLDER = `${PROJECT_FOLDER}logs${path.sep}`;
-const INFOS_FOLDER = `${PROJECT_FOLDER}infos${path.sep}`;
+const LOG_FOLDER = `${PROJECT_FOLDER}log${Path["sep"]}`;
+const DATASTORAGE_FOLDER = `${PROJECT_FOLDER}dataStorage${Path["sep"]}`;
+const INFO_FOLDER = `${PROJECT_FOLDER}infos${Path["sep"]}`;
 
-dotenv.config({ path: `${PROJECT_FOLDER}.env` });
+Dotenv.config({ path: `${PROJECT_FOLDER}.env` });
 const GENESYS_ENDPOINT_URL = process["env"]["GENESYS_ENDPOINT_URL"];
 const ENCRYPT_KEY = process["env"]["ENCRYPT_KEY"];
 const SQL_DATABASE = process["env"]["SQL_DATABASE"];
@@ -46,7 +47,7 @@ const SQL_USER = process["env"]["SQL_USER"];
 
 // Decrypt fields
 const decrypt = (iv, content) => {
-   const decipher = crypto.createDecipheriv("aes-256-ctr", ENCRYPT_KEY, Buffer.from(iv, "hex"));
+   const decipher = Crypto.createDecipheriv("aes-256-ctr", ENCRYPT_KEY, Buffer.from(iv, "hex"));
    const decrypted = Buffer.concat([decipher.update(Buffer.from(content, "hex")), decipher.final()]);
    return decrypted.toString();
 };
@@ -65,8 +66,8 @@ export {
    // General fields
    APP_RUNNING_ENV,
    PROJECT_FOLDER,
-   LOGS_FOLDER,
-   INFOS_FOLDER,
+   LOG_FOLDER,
+   INFO_FOLDER,
    GENESYS_ENDPOINT_URL,
    SQL_DATABASE,
    SQL_SERVER,

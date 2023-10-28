@@ -1,8 +1,8 @@
 // npm i node-windows
-import service from "node-windows";
-import { PROJECT_FOLDER } from "../utils/constants.js";
+import Service from "node-windows";
+import { PROJECT_FOLDER } from "../util/constants.js";
 
-const nodeService = service.Service;
+const nodeService = Service.Service;
 
 const svc = new nodeService({
    name: "???",
