@@ -1,6 +1,6 @@
-import {generalLogger} from "../utils/loggerConfig.js";
+import { generalLogger } from "../utils/loggerConfig.js";
 import Moment from "moment";
-import {DataTypes} from "sequelize";
+import { DataTypes } from "sequelize";
 
 export default async function extractAndInsertGroup(payload, sequelize) {
    try {
@@ -11,24 +11,24 @@ export default async function extractAndInsertGroup(payload, sequelize) {
       if (groupModel === false) return false;
 
       await Promise.all(
-          groupData.map((data) =>
-              groupModel.upsert(data, {
-                 updateOnDuplicate: [
-                    "group_name",
-                    "description",
-                    "date_modified",
-                    "member_count",
-                    "state",
-                    "version",
-                    "type",
-                    "is_rules_visible",
-                    "visibility",
-                    "chat_jabber_id",
-                    "owners",
-                    "stage_time",
-                 ],
-              })
-          )
+         groupData.map((data) =>
+            groupModel.upsert(data, {
+               updateOnDuplicate: [
+                  "group_name",
+                  "description",
+                  "date_modified",
+                  "member_count",
+                  "state",
+                  "version",
+                  "type",
+                  "is_rules_visible",
+                  "visibility",
+                  "chat_jabber_id",
+                  "owners",
+                  "stage_time",
+               ],
+            }),
+         ),
       );
 
       return true;
@@ -81,15 +81,13 @@ const DefineGroup = (sequelize) => {
                len: [1, 255],
             },
             set(value) {
-               this.setDataValue("group_name", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255));
+               this.setDataValue(fieldName, value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255));
             },
          },
          description: {
             type: DataTypes.STRING(255),
             set(value) {
-               value ? this.setDataValue("description",
-                   value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
-               ) : null;
+               value ? this.setDataValue("description", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)) : null;
             },
          },
          date_modified: {
@@ -107,9 +105,7 @@ const DefineGroup = (sequelize) => {
          state: {
             type: DataTypes.STRING(255),
             set(value) {
-               value ? this.setDataValue("state",
-                   value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
-               ) : null;
+               value ? this.setDataValue("state", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)) : null;
             },
          },
          version: {
@@ -121,9 +117,7 @@ const DefineGroup = (sequelize) => {
          type: {
             type: DataTypes.STRING(255),
             set(value) {
-               value ? this.setDataValue("type",
-                   value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
-               ) : null;
+               value ? this.setDataValue("type", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)) : null;
             },
          },
          is_rules_visible: {
@@ -135,19 +129,15 @@ const DefineGroup = (sequelize) => {
          visibility: {
             type: DataTypes.STRING(255),
             set(value) {
-               value ? this.setDataValue("visibility",
-                   value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
-               ) : null;
+               value ? this.setDataValue("visibility", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)) : null;
             },
          },
          chat_jabber_id: {
             type: DataTypes.STRING(255),
             set(value) {
                value
-                   ? this.setDataValue("chat_jabber_id",
-                       value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255)
-                   )
-                   : null;
+                  ? this.setDataValue("chat_jabber_id", value.replace(/'/g, "''").replace(/\n/g, " ").substring(0, 255))
+                  : null;
             },
          },
          addresses: {

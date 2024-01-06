@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { generalLogger } from "../utils/loggerConfig.js";
+import { generalLogger } from "../config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
 import { GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET } from "../utils/constants.js";
 

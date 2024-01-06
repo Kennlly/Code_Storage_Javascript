@@ -1,6 +1,6 @@
 import Moment from "moment";
 import fetchToken from "./fetchToken.js";
-import { generalLogger } from "../utils/loggerConfig.js";
+import { generalLogger } from "../config/winstonConfig.js";
 import { INFO_FOLDER } from "../utils/constants.js";
 import { readFilePattern, writeFilePattern } from "./fileControllers/index.js";
 

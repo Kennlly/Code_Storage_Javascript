@@ -1,5 +1,5 @@
 import { promises as fs } from "fs";
-import { generalLogger } from "../../utils/loggerConfig.js";
+import { generalLogger } from "../../config/winstonConfig.js";
 
 export default async function removeFilePattern(filePath) {
    try {

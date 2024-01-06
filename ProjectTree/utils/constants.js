@@ -42,9 +42,6 @@ Dotenv.config({ path: `${PROJECT_FOLDER}.env` });
 export const GENESYS_ENDPOINT_URL = process["env"]["GENESYS_ENDPOINT_URL"];
 export const CALABRIO_RTA_ENDPOINT_URL = process["env"]["CALABRIO_RTA_ENDPOINT_URL"];
 const ENCRYPT_KEY = process["env"]["ENCRYPT_KEY"];
-const SQL_DATABASE = process["env"]["SQL_DATABASE"];
-const SQL_SERVER = process["env"]["SQL_SERVER"];
-const SQL_USER = process["env"]["SQL_USER"];
 
 // Decrypt fields
 const decrypt = (iv, content) => {
@@ -59,19 +56,27 @@ const GENESYS_CLIENT_ID = decrypt(GENESYS_CLIENT_ID_IV, GENESYS_CLIENT_ID_CONTEN
 const GENESYS_CLIENT_SECRET_IV = process["env"]["GENESYS_CLIENT_SECRET_IV"];
 const GENESYS_CLIENT_SECRET_CONTENT = process["env"]["GENESYS_CLIENT_SECRET_CONTENT"];
 const GENESYS_CLIENT_SECRET = decrypt(GENESYS_CLIENT_SECRET_IV, GENESYS_CLIENT_SECRET_CONTENT);
-const SQL_PASSWORD_IV = process["env"]["SQL_PASSWORD_IV"];
-const SQL_PASSWORD_CONTENT = process["env"]["SQL_PASSWORD_CONTENT"];
-const SQL_PASSWORD = decrypt(SQL_PASSWORD_IV, SQL_PASSWORD_CONTENT);
+
+export const SQL_DATABASE = process["env"]["SQL_DATABASE"];
+export const SQL_SERVER = process["env"]["SQL_SERVER"];
+export const SQL_USER = process["env"]["SQL_USER"];
+const SQL_PW_IV = process["env"]["SQL_PW_IV"];
+const SQL_PW_CONTENT = process["env"]["SQL_PW_CONTENT"];
+export const SQL_PW = decrypt(SQL_PW_IV, SQL_PW_CONTENT);
+
+export const EMAIL_USER = process["env"]["EMAIL_USER"];
+const EMAIL_PW_IV = process["env"]["EMAIL_PW_IV"];
+const EMAIL_PW_CONTENT = process["env"]["EMAIL_PW_CONTENT"];
+export const EMAIL_PW = decrypt(EMAIL_PW_IV, EMAIL_PW_CONTENT);
+
+export const EMAIL_RECIPIENTS = process["env"]["EMAIL_RECIPIENTS"];
+export const EMAIL_CC_RECIPIENTS = process["env"]["EMAIL_CC_RECIPIENTS"];
 
 export {
    // General fields
    APP_RUNNING_ENV,
    PROJECT_FOLDER,
-   SQL_DATABASE,
-   SQL_SERVER,
-   SQL_USER,
    // Decrypted fields
    GENESYS_CLIENT_ID,
    GENESYS_CLIENT_SECRET,
-   SQL_PASSWORD,
 };

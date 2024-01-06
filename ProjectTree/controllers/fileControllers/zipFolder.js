@@ -1,7 +1,7 @@
 import AdmZip from "adm-zip";
 import Moment from "moment";
 import { promises as Fs } from "fs";
-import { generalLogger } from "../../utils/loggerConfig.js";
+import { generalLogger } from "../../config/winstonConfig.js";
 
 export default async function zipFolder(folderPath, fileExtension) {
    const zip = new AdmZip("", undefined);

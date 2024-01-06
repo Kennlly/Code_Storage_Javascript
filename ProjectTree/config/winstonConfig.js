@@ -2,8 +2,8 @@
 //npm i winston-daily-rotate-file
 import { format, createLogger, transports } from "winston";
 import dailyRotateFile from "winston-daily-rotate-file";
-import * as path from "path";
-import { LOG_FOLDER } from "./constants.js";
+import * as Path from "path";
+import { LOG_FOLDER } from "../utils/constants.js";
 
 const { timestamp, combine, printf } = format;
 const logFormat = printf(({ level, message, timestamp, stack }) => {
@@ -11,7 +11,7 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
 });
 
 const customizeLog = (category) => {
-   const customizeDir = `${LOG_FOLDER}${category}${path.sep}`;
+   const customizeDir = `${LOG_FOLDER}${category}${Path.sep}`;
    const transport = new dailyRotateFile({
       dirname: customizeDir,
       filename: "%DATE%.log",
@@ -34,7 +34,5 @@ const customizeLog = (category) => {
    });
 };
 
-const generalLogger = customizeLog("general");
-const modelLogger = customizeLog("model");
-
-export { generalLogger, modelLogger };
+export const generalLogger = customizeLog("general");
+export const modelLogger = customizeLog("model");

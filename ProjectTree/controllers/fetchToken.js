@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { generalLogger } from "../utils/loggerConfig.js";
+import { generalLogger } from "../config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
 import { GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET } from "../utils/constants.js";
 
@@ -37,7 +37,7 @@ export default async function fetchToken() {
             await setTimeout(60000);
          } else {
             generalLogger.error(
-               `fetchToken Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`
+               `fetchToken Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`,
             );
             if (retryCounter === 3) break;
 
