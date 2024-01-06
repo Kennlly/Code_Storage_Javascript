@@ -1,5 +1,5 @@
 import { generalLogger } from "../utils/loggerConfig.js";
-import { fetchLookupPattern } from "../apis/patterns/index.js";
+import { fetchLookupPattern } from "../../old_Components/index.js";
 import buildInstance from "./buildInstance.js";
 import extractAndInsertGroup from "./group.js";
 

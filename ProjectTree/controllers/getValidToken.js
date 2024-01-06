@@ -1,15 +1,17 @@
-import moment from "moment";
-import fetchToken from "../apis/fetchToken.js";
+import Moment from "moment";
+import fetchToken from "./fetchToken.js";
 import { generalLogger } from "../utils/loggerConfig.js";
-import { INFOS_FOLDER } from "../utils/constants.js";
+import { INFO_FOLDER } from "../utils/constants.js";
 import { readFilePattern, writeFilePattern } from "./fileControllers/index.js";
 
 export default async function getValidToken() {
+   const funcName = "[getValidToken Func]";
+
    try {
       // Get token from local file
-      const localTokenInfo = await readFilePattern(`${INFOS_FOLDER}genesysToken`, "json");
+      const localTokenInfo = await readFilePattern(`${INFO_FOLDER}genesysToken`, "json");
       if (localTokenInfo === false) {
-         generalLogger.error("getValidToken Func - Get local token info ERROR!");
+         generalLogger.error(`${funcName} - Get local token info ERROR!`);
          return false;
       }
 
@@ -20,35 +22,39 @@ export default async function getValidToken() {
       // Generate new token and update local file
       const newToken = await fetchToken();
       if (newToken === false) {
-         generalLogger.error("getValidToken Func - Generate new token ERROR!");
+         generalLogger.error(`${funcName} - Generate new token ERROR!`);
          return false;
       }
 
-      newToken.createAt = moment().format("YYYY-MM-DD HH:mm");
-      const writingResult = await writeFilePattern(`${INFOS_FOLDER}genesysToken`, "json", newToken);
+      newToken.createAt = Moment().format("YYYY-MM-DD HH:mm");
+      const writingResult = await writeFilePattern(`${INFO_FOLDER}genesysToken`, "json", newToken);
       if (writingResult === false) {
-         generalLogger.error("getValidToken Func - Writing new token to local ERROR!");
+         generalLogger.error(`${funcName} - Writing new token to local ERROR!`);
          return false;
       }
 
       return newToken["access_token"];
    } catch (err) {
-      generalLogger.error(`getValidToken Func ${err}.`);
+      generalLogger.error(`${funcName} - ${err}.`);
       return false;
    }
 }
 
-const isTokenValid = async (tokenInfo) => {
-   if (JSON.stringify(tokenInfo) === "{}") return { isValid: false, token: "" };
+const isTokenValid = (tokenInfo) => {
+   try {
+      if (JSON.stringify(tokenInfo) === "{}") return { isValid: false, token: "" };
 
-   const { access_token, createAt } = tokenInfo;
-   if (!createAt) return { isValid: false, token: "" };
+      const { access_token, token_type, expires_in, createAt } = tokenInfo;
+      if (!access_token || !token_type || !expires_in || !createAt) return { isValid: false, token: "" };
 
-   const createTimeInMoment = moment(createAt, "YYYY-MM-DD HH:mm", true);
-   const currentTimeInMoment = moment();
-   const timeDiff = currentTimeInMoment.diff(createTimeInMoment, "hour");
+      const createTimeInMoment = Moment(createAt, "YYYY-MM-DD HH:mm", true);
+      const timeDiff = Moment().diff(createTimeInMoment, "hour");
 
-   return timeDiff <= 23 ? { isValid: true, token: access_token } : { isValid: false, token: "" };
+      return timeDiff <= 23 ? { isValid: true, token: access_token } : { isValid: false, token: "" };
+   } catch (err) {
+      generalLogger.error(`[isTokenValid Func] - ${err}.`);
+      return false;
+   }
 };
 
 // Complicated Version
@@ -122,3 +128,5 @@ const isTokenValid = async (tokenInfo) => {
 //       return false;
 //    }
 // };
+
+// await getValidToken();

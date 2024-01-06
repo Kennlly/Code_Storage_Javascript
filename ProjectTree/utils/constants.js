@@ -6,7 +6,7 @@ import * as Path from "path";
 import Crypto from "crypto";
 
 const detectEnv = () => {
-   const ipAddress = ip.address();
+   const ipAddress = Ip.address();
    switch (ipAddress) {
       case "10.77.25.50":
          return "DEV";
@@ -28,18 +28,19 @@ const detectEnv = () => {
 const APP_RUNNING_ENV = detectEnv();
 
 const defineProjectFolder = () => {
-   if (APP_RUNNING_ENV === "Local") return "/Volumes/Web_Development/Javascript/Code_Storage/ProjectTree/";
+   if (APP_RUNNING_ENV === "Local") return "/Volumes/JSAndTS/Javascript/Code_Storage_Javascript/ProjectTree/";
    if (APP_RUNNING_ENV === "Office") return "C:/???";
    return "D:\\GenesysBatch\\Node.js\\???";
 };
 const PROJECT_FOLDER = defineProjectFolder();
 
-const LOG_FOLDER = `${PROJECT_FOLDER}log${Path["sep"]}`;
+export const LOG_FOLDER = `${PROJECT_FOLDER}log${Path["sep"]}`;
 const DATASTORAGE_FOLDER = `${PROJECT_FOLDER}dataStorage${Path["sep"]}`;
-const INFO_FOLDER = `${PROJECT_FOLDER}infos${Path["sep"]}`;
+export const INFO_FOLDER = `${PROJECT_FOLDER}info${Path["sep"]}`;
 
 Dotenv.config({ path: `${PROJECT_FOLDER}.env` });
-const GENESYS_ENDPOINT_URL = process["env"]["GENESYS_ENDPOINT_URL"];
+export const GENESYS_ENDPOINT_URL = process["env"]["GENESYS_ENDPOINT_URL"];
+export const CALABRIO_RTA_ENDPOINT_URL = process["env"]["CALABRIO_RTA_ENDPOINT_URL"];
 const ENCRYPT_KEY = process["env"]["ENCRYPT_KEY"];
 const SQL_DATABASE = process["env"]["SQL_DATABASE"];
 const SQL_SERVER = process["env"]["SQL_SERVER"];
@@ -66,9 +67,6 @@ export {
    // General fields
    APP_RUNNING_ENV,
    PROJECT_FOLDER,
-   LOG_FOLDER,
-   INFO_FOLDER,
-   GENESYS_ENDPOINT_URL,
    SQL_DATABASE,
    SQL_SERVER,
    SQL_USER,

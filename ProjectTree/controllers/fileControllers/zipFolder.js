@@ -1,7 +1,7 @@
 import AdmZip from "adm-zip";
 import Moment from "moment";
 import { promises as Fs } from "fs";
-import LOGGER from "./loggerConfig.js";
+import { generalLogger } from "../../utils/loggerConfig.js";
 
 export default async function zipFolder(folderPath, fileExtension) {
    const zip = new AdmZip("", undefined);
@@ -11,7 +11,7 @@ export default async function zipFolder(folderPath, fileExtension) {
       // Get an original full file list
       const fullFileList = await Fs.readdir(folderPath);
       if (fullFileList.length === 0) {
-         LOGGER.info(`${funcNote} - There is NO files in the folder.`);
+         generalLogger.info(`${funcNote} - There is NO files in the folder.`);
          return true;
       }
 
@@ -26,7 +26,7 @@ export default async function zipFolder(folderPath, fileExtension) {
          return fileDateStr === backwardOneMonthDateStr && extension === fileExtension;
       });
       if (filteredFileList.length === 0) {
-         LOGGER.info(`${funcNote} - There are NO files for ${backwardOneMonthDateStr} need to be zipped.`);
+         generalLogger.info(`${funcNote} - There are NO files for ${backwardOneMonthDateStr} need to be zipped.`);
          return true;
       }
 
@@ -39,10 +39,10 @@ export default async function zipFolder(folderPath, fileExtension) {
          await Fs.unlink(`${folderPath}${file}`);
       }
 
-      LOGGER.info(`${funcNote} - Zip and Remove files for ${backwardOneMonthDateStr} COMPLETED!`);
+      generalLogger.info(`${funcNote} - Zip and Remove files for ${backwardOneMonthDateStr} COMPLETED!`);
       return true;
    } catch (err) {
-      LOGGER.error(`${funcNote} - ${err}.`);
+      generalLogger.error(`${funcNote} - ${err}.`);
       return false;
    }
 }

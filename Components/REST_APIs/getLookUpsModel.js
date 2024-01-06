@@ -1,6 +1,6 @@
 import { generalLogger } from "../../ProjectTree/utils/loggerConfig.js";
 import { GENESYS_ENDPOINT_URL } from "../../ProjectTree/utils/constants.js";
-import restGETPattern from "../../ProjectTree/apis/patterns/restGETPattern.js";
+import restGETPattern from "../../old_Components/restGETPattern.js";
 
 export default async function getLookUpsModel(apiEndpoint) {
    let fullPayload = [];
@@ -20,7 +20,7 @@ const getLookUpsModelRecursionHelper = async (apiEndpoint, fullPayload) => {
       const payload = await restGETPattern(apiEndpoint);
       if (payload === false) {
          generalLogger.error(
-            `getLookUpsModel Func - getLookUpsModelRecursionHelper: Get payload ERROR! ApiEndpoint = ${apiEndpoint}`
+            `getLookUpsModel Func - getLookUpsModelRecursionHelper: Get payload ERROR! ApiEndpoint = ${apiEndpoint}`,
          );
          return false;
       }
@@ -29,8 +29,8 @@ const getLookUpsModelRecursionHelper = async (apiEndpoint, fullPayload) => {
       if (JSON.stringify(payload) === "{}" || !entities || entities.length === 0) {
          generalLogger.error(
             `getLookUpsModel Func - getLookUpsModelRecursionHelper: Unexpected EMPTY payload! ApiEndpoint = ${apiEndpoint} Payload = \n${JSON.stringify(
-               payload
-            )}`
+               payload,
+            )}`,
          );
          return false;
       }

@@ -1,4 +1,4 @@
-import restGETPattern from "./restGETPattern.js";
+import restGETPattern from "../../../old_Components/restGETPattern.js";
 import { generalLogger } from "../../utils/loggerConfig.js";
 import { GENESYS_ENDPOINT_URL } from "../../utils/constants.js";
 

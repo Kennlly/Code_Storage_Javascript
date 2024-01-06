@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../../utils/loggerConfig.js";
-import getValidToken from "../../controllers/getValidToken.js";
+import { generalLogger } from "../ProjectTree/utils/loggerConfig.js";
+import getValidToken from "../ProjectTree/controllers/getValidToken.js";
 
 export default async function restGETPattern(apiEndpoint) {
    const funcNote = `ApiEndpoint = ${apiEndpoint}`;
@@ -36,7 +36,7 @@ export default async function restGETPattern(apiEndpoint) {
             await setTimeout(60000);
          } else {
             generalLogger.error(
-               `restGETPattern Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`
+               `restGETPattern Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`,
             );
             if (retryCounter === 3) break;
 

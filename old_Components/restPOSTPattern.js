@@ -1,8 +1,8 @@
 //npm node-fetch
 import fetch from "node-fetch";
-import { generalLogger } from "../../utils/loggerConfig.js";
+import { generalLogger } from "../ProjectTree/utils/loggerConfig.js";
 import { setTimeout } from "timers/promises";
-import getValidToken from "../../controllers/getValidToken.js";
+import getValidToken from "../ProjectTree/controllers/getValidToken.js";
 
 export default async function restPOSTPattern(apiEndpoint, apiQueryBody) {
    const funcNote = `apiEndpoint = ${apiEndpoint}, apiQueryBody = ${JSON.stringify(apiQueryBody)}`;
@@ -38,7 +38,7 @@ export default async function restPOSTPattern(apiEndpoint, apiQueryBody) {
             await setTimeout(60000);
          } else {
             generalLogger.error(
-               `restPOSTPattern Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`
+               `restPOSTPattern Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`,
             );
             if (retryCounter === 3) break;
 
