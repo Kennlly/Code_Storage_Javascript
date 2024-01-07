@@ -1,10 +1,10 @@
 import Axios from "axios";
-import { generalLogger } from "../config/winstonConfig.js";
-import { setTimeout } from "timers/promises";
 import { GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET } from "../utils/constants.js";
+import { setTimeout } from "timers/promises";
+import { generalLogger } from "../config/winstonConfig.js";
 
-export default async function axiosFetchToken() {
-   const funcName = "[axiosFetchToken Func]";
+export default async function fetchToken() {
+   const funcName = "[fetchToken Func]";
 
    // const apiEndpoint = "https://login.usw2.pure.cloud/oauth/token";
    // OR
@@ -46,13 +46,20 @@ export default async function axiosFetchToken() {
             retryCounter++;
          }
       } catch (err) {
-         const { data, status } = err["response"];
-         const errorMsgDetail = `${data["error"]} / ${data["description"]}`;
-         const errorMsgConclusion = err["message"];
+         const errResponse = err["response"];
 
-         generalLogger.error(
-            `${funcName} - ${errorMsgConclusion}. Response Code = ${status}. Description: ${errorMsgDetail}. Retrying on ${retryCounter} / 3.`,
-         );
+         if (!errResponse) {
+            generalLogger.error(`${funcName} - ${err.toString()}`);
+         } else {
+            const {
+               data: { message },
+               status,
+               statusText,
+            } = err["response"];
+            generalLogger.error(
+               `${funcName} - Response Code = ${status}. Status Text = ${statusText}. Description: ${message}`,
+            );
+         }
 
          if (retryCounter === 3) break;
 
@@ -64,6 +71,3 @@ export default async function axiosFetchToken() {
    generalLogger.error(`${funcName} - ERROR after 3 times retries!`);
    return false;
 }
-
-// const result = await axiosFetchToken();
-// console.log("result: ", result);

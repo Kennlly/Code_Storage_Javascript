@@ -1,8 +1,8 @@
-import { GENESYS_ENDPOINT_URL } from "../utils/constants.js";
-import getValidToken from "../controllers/getValidToken.js";
+import { GENESYS_ENDPOINT_URL } from "../../utils/constants.js";
+import getToken from "../../controllers/getToken.js";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../config/winstonConfig.js";
-import AxiosConfig from "../config/axiosConfig.js";
+import { generalLogger } from "../../config/winstonConfig.js";
+import AxiosConfig from "../../config/axiosConfig.js";
 
 export default async function restAPIService(requestMethod, endpoint, params, queryBody) {
    const funcName = "[restAPIService Func]";
@@ -10,7 +10,12 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
       params,
    )}; Query body = ${queryBody}]`;
 
-   const requestConfig = {
+   if (AxiosConfig === false) {
+      generalLogger.error(`${funcName} - Axios Configuration ERROR!`);
+      return false;
+   }
+
+   const request = {
       method: requestMethod,
       baseURL: GENESYS_ENDPOINT_URL,
       headers: { "Content-Type": "application/json" },
@@ -18,17 +23,19 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
    };
 
    // Ensure Genesys Token is valid
-   const genesysToken = await getValidToken();
-   if (genesysToken) {
-      requestConfig.headers.Authorization = `Bearer ${genesysToken}`;
+   const genesysToken = await getToken();
+   if (genesysToken === false) {
+      generalLogger.error(`${funcName} ${funcArgus} - Get Genesys Token ERROR!`);
+      return false;
    }
+   request.headers.Authorization = `Bearer ${genesysToken}`;
 
    switch (requestMethod) {
       case "GET":
-         requestConfig.params = params;
+         if (params) request.params = params;
          break;
       case "POST":
-         requestConfig.data = queryBody;
+         request.data = queryBody;
          break;
       default:
          generalLogger.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
@@ -39,7 +46,7 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
 
    while (true) {
       try {
-         return await AxiosConfig(requestConfig);
+         return await AxiosConfig(request);
       } catch (err) {
          if (typeof err === "string") {
             generalLogger.error(`${funcName} ${funcArgus} - ${err}`);

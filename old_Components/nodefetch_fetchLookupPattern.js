@@ -1,6 +1,6 @@
-import restGETPattern from "../../../old_Components/restGETPattern.js";
-import { generalLogger } from "../../utils/loggerConfig.js";
-import { GENESYS_ENDPOINT_URL } from "../../utils/constants.js";
+import restGETPattern from "./nodefetch_restGETPattern.js";
+import { generalLogger } from "../ProjectTree/config/winstonConfig.js";
+import { GENESYS_ENDPOINT_URL } from "../ProjectTree/utils/constants.js";
 
 export default async function fetchLookupPattern(apiEndpoint) {
    const funcNote = `Initial api endpoint = ${apiEndpoint}`;

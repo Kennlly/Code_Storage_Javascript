@@ -1,9 +1,16 @@
 import { generalLogger } from "../config/winstonConfig.js";
 import nodeMailerConfig from "../config/nodeMailerConfig.js";
-import { EMAIL_CC_RECIPIENTS, EMAIL_RECIPIENTS } from "../utils/constants.js";
+import { EMAIL_CC_RECIPIENTS, EMAIL_RECIPIENTS } from "./constants.js";
 
-export default async function nodemailerService(content) {
-   const funcNote = `[nodemailerService Func] [content = ${content}]`;
+export default async function deliverEmailNoti(content) {
+   const funcName = "[deliverEmailNoti Func]";
+   const funcArgus = `[Content = ${JSON.stringify(content)}]`;
+
+   if (nodeMailerConfig === false) {
+      generalLogger.error(`${funcName} - Node Mailer Configuration ERROR!`);
+      return false;
+   }
+
    try {
       const message = {
          from: "NTT_IW_WFM_DATA_CHECK<bpo_iw_smtprelay@global.ntt>",
@@ -27,10 +34,10 @@ export default async function nodemailerService(content) {
 
       return true;
    } catch (err) {
-      generalLogger.error(`${funcNote} - ${err}`);
+      generalLogger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
       return false;
    }
 }
 
-// const result = await nodemailerService("test");
+// const result = await deliverEmailNoti("test");
 // console.log("result", result);

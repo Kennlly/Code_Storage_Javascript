@@ -1,15 +1,20 @@
-import { CALABRIO_RTA_ENDPOINT_URL } from "../utils/constants.js";
+import { CALABRIO_RTA_ENDPOINT_URL } from "../../utils/constants.js";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../config/winstonConfig.js";
-import AxiosConfig from "../config/axiosConfig.js";
+import { generalLogger } from "../../config/winstonConfig.js";
+import AxiosConfig from "../../config/axiosConfig.js";
 
 export default async function soapAPIService(requestMethod, endpoint, soapAction, queryBody) {
    const funcName = "[soapAPIService Func]";
    const funcArgus = `[Rest Method = ${requestMethod}; API Endpoint = ${endpoint}; Soap Action = ${soapAction}; Query body = ${queryBody}]`;
 
+   if (AxiosConfig === false) {
+      generalLogger.error(`${funcName} - Axios Configuration ERROR!`);
+      return false;
+   }
+
    let retryCounter = 1;
 
-   const requestConfig = {
+   const request = {
       method: requestMethod,
       baseURL: CALABRIO_RTA_ENDPOINT_URL,
       url: endpoint,
@@ -21,7 +26,7 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
 
    switch (requestMethod) {
       case "POST":
-         requestConfig.data = queryBody;
+         request.data = queryBody;
          break;
       default:
          generalLogger.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
@@ -30,7 +35,7 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
 
    while (true) {
       try {
-         return await AxiosConfig(requestConfig);
+         return await AxiosConfig(request);
       } catch (err) {
          if (typeof err === "string") {
             generalLogger.error(`${funcName} ${funcArgus} - ${err}`);

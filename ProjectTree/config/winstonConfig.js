@@ -17,6 +17,7 @@ const customizeLog = (category) => {
       filename: "%DATE%.log",
       datePattern: "YYYY-MM-DD",
    });
+
    return createLogger({
       level: "debug",
       format: combine(timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSS" }), format.errors({ stack: true }), logFormat),
@@ -35,4 +36,3 @@ const customizeLog = (category) => {
 };
 
 export const generalLogger = customizeLog("general");
-export const modelLogger = customizeLog("model");

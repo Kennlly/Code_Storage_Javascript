@@ -1,7 +1,7 @@
 import Sql from "mssql";
-import { generalLogger } from "../config/winstonConfig.js";
+import { generalLogger } from "../../config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
-import buildMsSQLInstance from "../config/mssqlConfig.js";
+import buildMsSQLInstance from "../../config/mssqlConfig.js";
 
 const poolName2Pool = new Map();
 
@@ -9,6 +9,10 @@ export const buildConnection = async (poolName) => {
    const funcNote = `[buildConnection Func] [DatabasePoolName = ${poolName}]`;
 
    const mssqlConfig = buildMsSQLInstance(poolName);
+   if (mssqlConfig === false) {
+      generalLogger.error(`${funcNote} - MsSQL Configuration ERROR!`);
+      return false;
+   }
 
    let retryCounter = 1;
    while (retryCounter <= 3) {

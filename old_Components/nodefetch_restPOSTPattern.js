@@ -1,27 +1,29 @@
+//npm node-fetch
 import fetch from "node-fetch";
+import { generalLogger } from "../ProjectTree/config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../ProjectTree/utils/loggerConfig.js";
-import getValidToken from "../ProjectTree/controllers/getValidToken.js";
+import getToken from "../ProjectTree/controllers/getToken.js";
 
-export default async function restGETPattern(apiEndpoint) {
-   const funcNote = `ApiEndpoint = ${apiEndpoint}`;
+export default async function restPOSTPattern(apiEndpoint, apiQueryBody) {
+   const funcNote = `apiEndpoint = ${apiEndpoint}, apiQueryBody = ${JSON.stringify(apiQueryBody)}`;
 
    let retryCounter = 1;
    while (true) {
       try {
          // Ensure token is valid
-         const genesysToken = await getValidToken();
+         const genesysToken = await getToken();
          if (genesysToken === false) {
-            generalLogger.error(`restGETPattern Func - Genesys token validation ERROR!`);
+            generalLogger.error("restPOSTPattern Func - Genesys token validation ERROR!");
             return false;
          }
 
          const response = await fetch(apiEndpoint, {
-            method: "GET",
+            method: "POST",
             headers: {
                "Content-Type": "application/json",
                Authorization: `Bearer ${genesysToken}`,
             },
+            body: JSON.stringify(apiQueryBody),
          });
 
          const isSucceed = response.ok;
@@ -36,7 +38,7 @@ export default async function restGETPattern(apiEndpoint) {
             await setTimeout(60000);
          } else {
             generalLogger.error(
-               `restGETPattern Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`,
+               `restPOSTPattern Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`,
             );
             if (retryCounter === 3) break;
 
@@ -44,7 +46,7 @@ export default async function restGETPattern(apiEndpoint) {
             retryCounter++;
          }
       } catch (err) {
-         generalLogger.error(`restGETPattern Func ${err}. Retrying on ${retryCounter}.`);
+         generalLogger.error(`restPOSTPattern Func ${err}. Retrying on ${retryCounter}.`);
          if (retryCounter === 3) break;
 
          await setTimeout(10000 * retryCounter);
@@ -52,6 +54,6 @@ export default async function restGETPattern(apiEndpoint) {
       }
    }
 
-   generalLogger.error(`restGETPattern Func ERROR after ${retryCounter} times retries! ${funcNote}`);
+   generalLogger.error(`restPOSTPattern Func ERROR after ${retryCounter} times retries! ${funcNote}`);
    return false;
 }

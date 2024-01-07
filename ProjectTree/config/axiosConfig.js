@@ -3,7 +3,6 @@ import Https from "node:https";
 import { generalLogger } from "./winstonConfig.js";
 
 const buildAxiosInstance = () => {
-   const funcNote = `[buildAxiosInstance Func]`;
    try {
       const instance = Axios.create({
          timeout: 3000,
@@ -30,7 +29,7 @@ const buildAxiosInstance = () => {
 
       return instance;
    } catch (err) {
-      generalLogger.error(`${funcNote} - ${err}`);
+      generalLogger.error(`[buildAxiosInstance Func] Catching ERROR - ${err}`);
       return false;
    }
 };

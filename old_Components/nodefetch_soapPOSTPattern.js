@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../ProjectTree/utils/loggerConfig.js";
+import { generalLogger } from "../ProjectTree/config/winstonConfig.js";
 
 export default async function soapPOSTPattern(apiEndpoint, soapAction, xmlPayload) {
    const funcNote = `apiEndpoint = ${apiEndpoint}; soapAction = ${soapAction}; XML Payload = \n${xmlPayload}`;

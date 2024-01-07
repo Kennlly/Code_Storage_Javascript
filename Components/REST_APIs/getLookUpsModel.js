@@ -1,6 +1,6 @@
 import { generalLogger } from "../../ProjectTree/utils/loggerConfig.js";
 import { GENESYS_ENDPOINT_URL } from "../../ProjectTree/utils/constants.js";
-import restGETPattern from "../../old_Components/restGETPattern.js";
+import restGETPattern from "../../old_Components/nodefetch_restGETPattern.js";
 
 export default async function getLookUpsModel(apiEndpoint) {
    let fullPayload = [];

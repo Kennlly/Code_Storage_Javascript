@@ -1,11 +1,11 @@
 import Moment from "moment";
-import fetchToken from "./fetchToken.js";
+import fetchToken from "../service/fetchToken.js";
 import { generalLogger } from "../config/winstonConfig.js";
 import { INFO_FOLDER } from "../utils/constants.js";
 import { readFilePattern, writeFilePattern } from "./fileControllers/index.js";
 
-export default async function getValidToken() {
-   const funcName = "[getValidToken Func]";
+export default async function getToken() {
+   const funcName = "[getToken Func]";
 
    try {
       // Get token from local file
@@ -35,7 +35,7 @@ export default async function getValidToken() {
 
       return newToken["access_token"];
    } catch (err) {
-      generalLogger.error(`${funcName} - ${err}.`);
+      generalLogger.error(`${funcName} Catching ERROR - ${err}.`);
       return false;
    }
 }
@@ -58,7 +58,7 @@ const isTokenValid = (tokenInfo) => {
 };
 
 // Complicated Version
-// export default async function getValidToken(context, isMandatory) {
+// export default async function getToken(context, isMandatory) {
 //    try {
 //       const momentNow = moment();
 //
@@ -94,7 +94,7 @@ const isTokenValid = (tokenInfo) => {
 //
 //       return newToken["access_token"];
 //    } catch (err) {
-//       context.error(`getValidToken Func ${err}.`);
+//       context.error(`getToken Func ${err}.`);
 //       return false;
 //    }
 // }
@@ -129,4 +129,5 @@ const isTokenValid = (tokenInfo) => {
 //    }
 // };
 
-// await getValidToken();
+// const result = await getToken();
+// console.log("result: ", result);

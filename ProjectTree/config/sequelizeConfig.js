@@ -1,10 +1,10 @@
 import { Sequelize } from "sequelize";
-import { SQL_DATABASE, SQL_PASSWORD, SQL_SERVER, SQL_USER } from "../utils/constants.js";
+import { SQL_DATABASE, SQL_PW, SQL_SERVER, SQL_USER } from "../utils/constants.js";
 import { generalLogger } from "./winstonConfig.js";
 
 const buildSequelizeInstance = async () => {
    try {
-      const instance = new Sequelize(SQL_DATABASE, SQL_USER, SQL_PASSWORD, {
+      const instance = new Sequelize(SQL_DATABASE, SQL_USER, SQL_PW, {
          host: SQL_SERVER,
          dialect: "mssql",
          port: 1433,
@@ -35,7 +35,7 @@ const buildSequelizeInstance = async () => {
 
       return instance;
    } catch (err) {
-      generalLogger.error(`[buildSequelizeInstance Func] - ${err}`);
+      generalLogger.error(`[buildSequelizeInstance Func] Catching ERROR - ${err}`);
       return false;
    }
 };

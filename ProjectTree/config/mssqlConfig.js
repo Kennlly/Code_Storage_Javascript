@@ -48,7 +48,7 @@ export default function buildMsSQLInstance(poolName) {
          },
       };
    } catch (err) {
-      generalLogger.error(`${funcNote} - ${err}.`);
+      generalLogger.error(`${funcNote} Catching ERROR - ${err}.`);
       return false;
    }
 }
