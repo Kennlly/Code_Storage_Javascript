@@ -1,4 +1,4 @@
-import { generalLogger } from "../config/winstonConfig.js";
+import { Logger } from "../config/winstonConfig.js";
 import nodeMailerConfig from "../config/nodeMailerConfig.js";
 import { EMAIL_CC_RECIPIENTS, EMAIL_RECIPIENTS } from "./constants.js";
 
@@ -7,7 +7,7 @@ export default async function deliverEmailNoti(content) {
    const funcArgus = `[Content = ${JSON.stringify(content)}]`;
 
    if (nodeMailerConfig === false) {
-      generalLogger.error(`${funcName} - Node Mailer Configuration ERROR!`);
+      Logger.error(`${funcName} - Node Mailer Configuration ERROR!`);
       return false;
    }
 
@@ -34,7 +34,7 @@ export default async function deliverEmailNoti(content) {
 
       return true;
    } catch (err) {
-      generalLogger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
+      Logger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
       return false;
    }
 }

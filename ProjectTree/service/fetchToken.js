@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET } from "../utils/constants.js";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../config/winstonConfig.js";
+import { Logger } from "../config/winstonConfig.js";
 
 export default async function fetchToken() {
    const funcName = "[fetchToken Func]";
@@ -36,7 +36,7 @@ export default async function fetchToken() {
             // Known issue - Calling API too frequently
             await setTimeout(60000);
          } else {
-            generalLogger.error(
+            Logger.error(
                `${funcName} - Response code = ${status}; Error Msg = ${statusText}. Retrying on ${retryCounter} / 3.`,
             );
 
@@ -49,16 +49,14 @@ export default async function fetchToken() {
          const errResponse = err["response"];
 
          if (!errResponse) {
-            generalLogger.error(`${funcName} - ${err.toString()}`);
+            Logger.error(`${funcName} - ${err.toString()}`);
          } else {
             const {
                data: { message },
                status,
                statusText,
             } = err["response"];
-            generalLogger.error(
-               `${funcName} - Response Code = ${status}. Status Text = ${statusText}. Description: ${message}`,
-            );
+            Logger.error(`${funcName} - Response Code = ${status}. Status Text = ${statusText}. Description: ${message}`);
          }
 
          if (retryCounter === 3) break;
@@ -68,6 +66,6 @@ export default async function fetchToken() {
       }
    }
 
-   generalLogger.error(`${funcName} - ERROR after 3 times retries!`);
+   Logger.error(`${funcName} - ERROR after 3 times retries!`);
    return false;
 }

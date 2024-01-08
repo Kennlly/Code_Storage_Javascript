@@ -5,33 +5,33 @@ instead, we just call all the promises and save them into a promising variable, 
 
 //Bad code: but this is not returning promise, just provides idea
 const badIntegrateStatisticsFlow = async () => {
-	try {
-		const postAgentStatResult = await agentStatFlow();
-		const postAgentQueueStatResult = await agentQueueStatFlow();
-		const postQueueStatResult = await queueStatFlow();
-		return postAgentStatResult && postAgentQueueStatResult && postQueueStatResult;
-	} catch (err) {
-		generalLogger.error(`integrateStatisticsFlow Func ${err}`);
-		return false;
-	}
+   try {
+      const postAgentStatResult = await agentStatFlow();
+      const postAgentQueueStatResult = await agentQueueStatFlow();
+      const postQueueStatResult = await queueStatFlow();
+      return postAgentStatResult && postAgentQueueStatResult && postQueueStatResult;
+   } catch (err) {
+      Logger.error(`integrateStatisticsFlow Func ${err}`);
+      return false;
+   }
 };
 
 //Good code
 const goodIntegrateStatisticsFlow = async () => {
-	try {
-		const postAgentStatResultPromise = agentStatFlow();
-		const postAgentQueueStatResultPromise = agentQueueStatFlow();
-		const postQueueStatResultPromise = queueStatFlow();
+   try {
+      const postAgentStatResultPromise = agentStatFlow();
+      const postAgentQueueStatResultPromise = agentQueueStatFlow();
+      const postQueueStatResultPromise = queueStatFlow();
 
-		const [postAgentStatResult, postAgentQueueStatResult, postQueueStatResult] = await Promise.all([
-			postAgentStatResultPromise,
-			postAgentQueueStatResultPromise,
-			postQueueStatResultPromise,
-		]);
+      const [postAgentStatResult, postAgentQueueStatResult, postQueueStatResult] = await Promise.all([
+         postAgentStatResultPromise,
+         postAgentQueueStatResultPromise,
+         postQueueStatResultPromise,
+      ]);
 
-		return postAgentStatResult && postAgentQueueStatResult && postQueueStatResult;
-	} catch (err) {
-		generalLogger.error(`integrateStatisticsFlow Func ${err}`);
-		return false;
-	}
+      return postAgentStatResult && postAgentQueueStatResult && postQueueStatResult;
+   } catch (err) {
+      Logger.error(`integrateStatisticsFlow Func ${err}`);
+      return false;
+   }
 };

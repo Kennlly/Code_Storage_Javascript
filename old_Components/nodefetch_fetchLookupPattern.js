@@ -1,5 +1,5 @@
 import restGETPattern from "./nodefetch_restGETPattern.js";
-import { generalLogger } from "../ProjectTree/config/winstonConfig.js";
+import { Logger } from "../ProjectTree/config/winstonConfig.js";
 import { GENESYS_ENDPOINT_URL } from "../ProjectTree/utils/constants.js";
 
 export default async function fetchLookupPattern(apiEndpoint) {
@@ -13,13 +13,13 @@ export default async function fetchLookupPattern(apiEndpoint) {
          const fullURL = `${GENESYS_ENDPOINT_URL}${currentEndpoint}`;
          const data = await restGETPattern(fullURL);
          if (data === false) {
-            generalLogger.error(`fetchLookupPattern Func - Getting data from Genesys ERROR! URL = ${fullURL}`);
+            Logger.error(`fetchLookupPattern Func - Getting data from Genesys ERROR! URL = ${fullURL}`);
             return false;
          }
 
          const temp = data["entities"];
          if (JSON.stringify(data) === "{}" || !temp || temp.length === 0) {
-            generalLogger.error(`fetchLookupPattern Func - Unexpected EMPTY payload! URL = ${fullURL}`);
+            Logger.error(`fetchLookupPattern Func - Unexpected EMPTY payload! URL = ${fullURL}`);
             return false;
          }
 
@@ -31,7 +31,7 @@ export default async function fetchLookupPattern(apiEndpoint) {
 
          currentEndpoint = nextUri;
       } catch (err) {
-         generalLogger.error(`fetchLookupPattern Func ${err} ${funcNote}`);
+         Logger.error(`fetchLookupPattern Func ${err} ${funcNote}`);
          return false;
       }
    }

@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { generalLogger } from "../ProjectTree/config/winstonConfig.js";
+import { Logger } from "../ProjectTree/config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
 import { GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET } from "../ProjectTree/utils/constants.js";
 
@@ -36,7 +36,7 @@ export default async function fetchToken() {
             // Known issue - Calling apis too frequently
             await setTimeout(60000);
          } else {
-            generalLogger.error(
+            Logger.error(
                `fetchToken Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`,
             );
             if (retryCounter === 3) break;
@@ -45,7 +45,7 @@ export default async function fetchToken() {
             retryCounter++;
          }
       } catch (err) {
-         generalLogger.error(`fetchToken Func ${err}. Retrying on ${retryCounter}.`);
+         Logger.error(`fetchToken Func ${err}. Retrying on ${retryCounter}.`);
          if (retryCounter === 3) break;
 
          await setTimeout(10000 * retryCounter);
@@ -53,6 +53,6 @@ export default async function fetchToken() {
       }
    }
 
-   generalLogger.error(`fetchToken Func ERROR after ${retryCounter} times retries!`);
+   Logger.error(`fetchToken Func ERROR after ${retryCounter} times retries!`);
    return false;
 }

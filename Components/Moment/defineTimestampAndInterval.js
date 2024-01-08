@@ -55,7 +55,7 @@ const defineDBQueryInterval = async (category, initialInterval, QUARTERLY_JOB_DB
          const insertStoreQuery = `INSERT INTO CTT_Calabrio_API_LastTimestampStore VALUES ('${storeTableName}','${timestampFromSourceStr}')`;
          const insertionResult = await basicDBQuery(QUARTERLY_JOB_DB_INFO, insertStoreQuery);
          if (insertionResult.rowsAffected[0] === 1) {
-            generalLogger.info(`First time insert ${storeTableName} SUCCEED!`);
+            Logger.info(`First time insert ${storeTableName} SUCCEED!`);
             return true;
          }
          throw new Error(`${storeTableName} store table has no data, but occurs insertion ERROR!`);
@@ -73,13 +73,13 @@ const defineDBQueryInterval = async (category, initialInterval, QUARTERLY_JOB_DB
          );
 
       if (timeDiff === 0) {
-         generalLogger.info(`${sourceTableName} does NOT update after ${definedEndTime}`);
+         Logger.info(`${sourceTableName} does NOT update after ${definedEndTime}`);
          return true;
       }
 
       return { definedStartTime, definedEndTime };
    } catch (err) {
-      generalLogger.error(`defineDBQueryInterval Func ${err} ${funcNote}`);
+      Logger.error(`defineDBQueryInterval Func ${err} ${funcNote}`);
       return false;
    }
 };
@@ -88,7 +88,7 @@ const defineStartEndTime = async (interval, timestampRecordFileName) => {
    const funcNote = `Initial interval = ${interval}, timestampRecordFileName = ${timestampRecordFileName}.`;
    try {
       if (interval && timestampRecordFileName) {
-         generalLogger.error(
+         Logger.error(
             `defineStartEndTime Func - Interval and Timestamp record file name should NOT be provided at the same time! ${funcNote}`,
          );
          return false;
@@ -116,7 +116,7 @@ const defineStartEndTime = async (interval, timestampRecordFileName) => {
 
       return { adjustedStartTime, adjustedEndTime };
    } catch (err) {
-      generalLogger.error(`defineStartEndTime Func ${err}. ${funcNote}`);
+      Logger.error(`defineStartEndTime Func ${err}. ${funcNote}`);
       return false;
    }
 };
@@ -143,7 +143,7 @@ const backwardTimestamp = (context, momentTimestamp) => {
 const forwardTimestamp = (timestamp) => {
    try {
       if (!timestamp) {
-         generalLogger.error(`forwardTimestamp Func - Parameter "timeStamp" is Required! Timestamp = ${timestamp}.`);
+         Logger.error(`forwardTimestamp Func - Parameter "timeStamp" is Required! Timestamp = ${timestamp}.`);
          return false;
       }
       const forwardHalfHourStr = moment
@@ -153,7 +153,7 @@ const forwardTimestamp = (timestamp) => {
          .format("YYYY-MM-DDTHH:mm[Z]");
       return backwardTimestamp(forwardHalfHourStr);
    } catch (err) {
-      generalLogger.error(`forwardTimestamp Func ${err}. Timestamp = ${timestamp}.`);
+      Logger.error(`forwardTimestamp Func ${err}. Timestamp = ${timestamp}.`);
       return false;
    }
 };

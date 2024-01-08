@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../ProjectTree/config/winstonConfig.js";
+import { Logger } from "../ProjectTree/config/winstonConfig.js";
 
 export default async function soapPOSTPattern(apiEndpoint, soapAction, xmlPayload) {
    const funcNote = `apiEndpoint = ${apiEndpoint}; soapAction = ${soapAction}; XML Payload = \n${xmlPayload}`;
@@ -22,17 +22,17 @@ export default async function soapPOSTPattern(apiEndpoint, soapAction, xmlPayloa
 
          const responseCode = response["status"];
          const errorMsg = response["statusText"];
-         generalLogger.error(
+         Logger.error(
             `soapPOSTPattern Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter} / 3.`,
          );
       } catch (err) {
-         generalLogger.error(`soapPOSTPattern Func ${err}. Retrying on ${retryCounter} / 3.`);
+         Logger.error(`soapPOSTPattern Func ${err}. Retrying on ${retryCounter} / 3.`);
       }
 
       await setTimeout(10000 * retryCounter);
       retryCounter++;
    }
 
-   generalLogger.error(`soapPOSTPattern Func ERROR after 3 times retries! ${funcNote}`);
+   Logger.error(`soapPOSTPattern Func ERROR after 3 times retries! ${funcNote}`);
    return false;
 }

@@ -1,6 +1,6 @@
 //npm node-fetch
 import fetch from "node-fetch";
-import { generalLogger } from "../ProjectTree/config/winstonConfig.js";
+import { Logger } from "../ProjectTree/config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
 import getToken from "../ProjectTree/controllers/getToken.js";
 
@@ -13,7 +13,7 @@ export default async function restPOSTPattern(apiEndpoint, apiQueryBody) {
          // Ensure token is valid
          const genesysToken = await getToken();
          if (genesysToken === false) {
-            generalLogger.error("restPOSTPattern Func - Genesys token validation ERROR!");
+            Logger.error("restPOSTPattern Func - Genesys token validation ERROR!");
             return false;
          }
 
@@ -37,7 +37,7 @@ export default async function restPOSTPattern(apiEndpoint, apiQueryBody) {
             // Known issue - Calling apis too frequently
             await setTimeout(60000);
          } else {
-            generalLogger.error(
+            Logger.error(
                `restPOSTPattern Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`,
             );
             if (retryCounter === 3) break;
@@ -46,7 +46,7 @@ export default async function restPOSTPattern(apiEndpoint, apiQueryBody) {
             retryCounter++;
          }
       } catch (err) {
-         generalLogger.error(`restPOSTPattern Func ${err}. Retrying on ${retryCounter}.`);
+         Logger.error(`restPOSTPattern Func ${err}. Retrying on ${retryCounter}.`);
          if (retryCounter === 3) break;
 
          await setTimeout(10000 * retryCounter);
@@ -54,6 +54,6 @@ export default async function restPOSTPattern(apiEndpoint, apiQueryBody) {
       }
    }
 
-   generalLogger.error(`restPOSTPattern Func ERROR after ${retryCounter} times retries! ${funcNote}`);
+   Logger.error(`restPOSTPattern Func ERROR after ${retryCounter} times retries! ${funcNote}`);
    return false;
 }

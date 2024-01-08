@@ -1,17 +1,17 @@
 import Nodemailer from "nodemailer";
-import { EMAIL_USER, EMAIL_PW } from "../utils/constants.js";
+import { EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PW } from "../utils/constants.js";
 
 // const transporter = nodemailer.createTransport({
 //    service: "hotmail",
 //    auth: {
-//       user: "kenny.he1121@outlook.com",
+//       user: "kenny.he@itsp-inc.com",
 //       pass: "???",
 //    },
 // });
 const NodeMailerConfig = Nodemailer.createTransport({
    pool: true,
-   host: "eu-smtp-outbound-1.mimecast.com",
-   port: 587,
+   host: EMAIL_HOST,
+   port: EMAIL_PORT,
    secure: false,
    auth: {
       user: EMAIL_USER,

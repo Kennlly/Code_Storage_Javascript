@@ -1,5 +1,5 @@
 import Sql from "mssql";
-import { generalLogger } from "../../config/winstonConfig.js";
+import { Logger } from "../../config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
 import buildMsSQLInstance from "../../config/mssqlConfig.js";
 
@@ -10,7 +10,7 @@ export const buildConnection = async (poolName) => {
 
    const mssqlConfig = buildMsSQLInstance(poolName);
    if (mssqlConfig === false) {
-      generalLogger.error(`${funcNote} - MsSQL Configuration ERROR!`);
+      Logger.error(`${funcNote} - MsSQL Configuration ERROR!`);
       return false;
    }
 
@@ -24,13 +24,13 @@ export const buildConnection = async (poolName) => {
 
          return poolName2Pool.get(poolName);
       } catch (err) {
-         generalLogger.error(`${funcNote} - ${err}. Retrying on ${retryCounter} / 3.`);
+         Logger.error(`${funcNote} - ${err}. Retrying on ${retryCounter} / 3.`);
          await setTimeout(10000);
          retryCounter++;
       }
    }
 
-   generalLogger.error(`${funcNote} - Connection ERROR after 3 times retries!`);
+   Logger.error(`${funcNote} - Connection ERROR after 3 times retries!`);
    return false;
 };
 export const closeConnection = async (poolName) => {
@@ -49,9 +49,9 @@ export const closeConnection = async (poolName) => {
          return;
       }
 
-      generalLogger.error(`${funcNote} - Closure ERROR!`);
+      Logger.error(`${funcNote} - Closure ERROR!`);
    } catch (err) {
-      generalLogger.error(`${funcNote} - ${err}.`);
+      Logger.error(`${funcNote} - ${err}.`);
    }
 };
 

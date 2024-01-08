@@ -1,36 +1,43 @@
 import Moment from "moment";
-import { generalLogger } from "./loggerConfig.js";
+import { Logger } from "../config/winstonConfig.js";
 
-export default function defineIntervals(startTime, endTime, requireIntervalInMin) {
-   const funcNote = `Start timestamp = ${startTime}; End timestamp = ${endTime}; RequireIntervalInMin = ${requireIntervalInMin}.`;
-   if (!startTime || !endTime || !requireIntervalInMin) {
-      generalLogger.error(
-         `defineIntervals Func - Unexpected EMPTY "start timestamp" and/or "end timestamp" and/or "require interval in minutes" parameters ERROR!`,
-      );
+export default function defineIntervals(
+   startTime,
+   endTime,
+   inputDatetimeStrPattern,
+   outputDatetimeStrPattern,
+   requiredIntervalInMin,
+) {
+   const funcName = "[defineIntervals Func]";
+   const funcArgus = `[Start Time = ${startTime}; End Time = ${endTime}; Input Datetime String Pattern = ${inputDatetimeStrPattern}; Output Datetime String Pattern = ${outputDatetimeStrPattern}; Required Interval In Min =${requiredIntervalInMin}]`;
+
+   if (!startTime || !endTime || !inputDatetimeStrPattern || !outputDatetimeStrPattern || !requiredIntervalInMin) {
+      Logger.error(`${funcName} - Missing Required Arguments ERROR! ${funcArgus} `);
       return false;
    }
 
    try {
-      const momentStartTimestamp = Moment(startTime, "YYYY-MM-DD HH:mm:ss.SSS Z", true);
+      const momentStartTimestamp = Moment(startTime, inputDatetimeStrPattern, true);
       const isStartValid = momentStartTimestamp.isValid();
-      const momentEndTimestamp = Moment(endTime, "YYYY-MM-DD HH:mm:ss Z", true);
+      const momentEndTimestamp = Moment(endTime, inputDatetimeStrPattern, true);
       const isEndValid = momentEndTimestamp.isValid();
       if (!isStartValid || !isEndValid) {
-         generalLogger.error(`defineIntervals Func - Invalid startTime and/or endTime ERROR! ${funcNote}`);
+         Logger.error(`${funcName} - Invalid startTime and/or endTime ERROR! ${funcArgus}`);
          return false;
       }
 
       const diff = momentEndTimestamp.diff(momentStartTimestamp, "minute");
 
       if (diff < 0) {
-         generalLogger.error(`defineIntervals Func - End time is EARLIER than start time! ${funcNote}`);
+         Logger.error(`${funcName} - End time is EARLIER than start time! ${funcArgus}`);
          return false;
       }
 
-      if (diff <= requireIntervalInMin) {
-         const momentEndTime = momentStartTimestamp.clone().add(requireIntervalInMin, "minute");
-         const startStr = momentStartTimestamp.utcOffset(Moment().utcOffset()).format("YYYY-MM-DD HH:mm:ss.SSS Z");
-         const endStr = momentEndTime.utcOffset(Moment().utcOffset()).format("YYYY-MM-DD HH:mm:ss.SSS Z");
+      if (diff <= requiredIntervalInMin) {
+         const momentEndTime = momentStartTimestamp.clone().add(requiredIntervalInMin, "minute");
+         // Note: one scenario is UTC from the database, but it actually means the EST
+         const startStr = momentStartTimestamp.utcOffset(Moment().utcOffset()).format(outputDatetimeStrPattern);
+         const endStr = momentEndTime.utcOffset(Moment().utcOffset()).format(outputDatetimeStrPattern);
 
          return [`${startStr}/${endStr}`];
       }
@@ -39,10 +46,10 @@ export default function defineIntervals(startTime, endTime, requireIntervalInMin
 
       let definedIntervals = [];
       while (leftMoment < momentEndTimestamp) {
-         const tempRightMoment = leftMoment.clone().add(requireIntervalInMin, "minute");
+         const tempRightMoment = leftMoment.clone().add(requiredIntervalInMin, "minute");
          const rightMoment = tempRightMoment < momentEndTimestamp ? tempRightMoment : momentEndTimestamp;
-         const startStr = leftMoment.utcOffset(Moment().utcOffset()).format("YYYY-MM-DD HH:mm:ss.SSS Z");
-         const endStr = rightMoment.utcOffset(Moment().utcOffset()).format("YYYY-MM-DD HH:mm:ss.SSS Z");
+         const startStr = leftMoment.utcOffset(Moment().utcOffset()).format(outputDatetimeStrPattern);
+         const endStr = rightMoment.utcOffset(Moment().utcOffset()).format(outputDatetimeStrPattern);
          definedIntervals.push(`${startStr}/${endStr}`);
 
          leftMoment = rightMoment;
@@ -50,7 +57,7 @@ export default function defineIntervals(startTime, endTime, requireIntervalInMin
 
       return definedIntervals;
    } catch (err) {
-      generalLogger.error(`defineIntervals Func ${err}. ${funcNote}`);
+      Logger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}.`);
       return false;
    }
 }

@@ -1,6 +1,6 @@
 import Moment from "moment";
 import fetchToken from "../service/fetchToken.js";
-import { generalLogger } from "../config/winstonConfig.js";
+import { Logger } from "../config/winstonConfig.js";
 import { INFO_FOLDER } from "../utils/constants.js";
 import { readFilePattern, writeFilePattern } from "./fileControllers/index.js";
 
@@ -11,7 +11,7 @@ export default async function getToken() {
       // Get token from local file
       const localTokenInfo = await readFilePattern(`${INFO_FOLDER}genesysToken`, "json");
       if (localTokenInfo === false) {
-         generalLogger.error(`${funcName} - Get local token info ERROR!`);
+         Logger.error(`${funcName} - Get local token info ERROR!`);
          return false;
       }
 
@@ -22,20 +22,20 @@ export default async function getToken() {
       // Generate new token and update local file
       const newToken = await fetchToken();
       if (newToken === false) {
-         generalLogger.error(`${funcName} - Generate new token ERROR!`);
+         Logger.error(`${funcName} - Generate new token ERROR!`);
          return false;
       }
 
       newToken.createAt = Moment().format("YYYY-MM-DD HH:mm");
       const writingResult = await writeFilePattern(`${INFO_FOLDER}genesysToken`, "json", newToken);
       if (writingResult === false) {
-         generalLogger.error(`${funcName} - Writing new token to local ERROR!`);
+         Logger.error(`${funcName} - Writing new token to local ERROR!`);
          return false;
       }
 
       return newToken["access_token"];
    } catch (err) {
-      generalLogger.error(`${funcName} Catching ERROR - ${err}.`);
+      Logger.error(`${funcName} Catching ERROR - ${err}.`);
       return false;
    }
 }
@@ -52,7 +52,7 @@ const isTokenValid = (tokenInfo) => {
 
       return timeDiff <= 23 ? { isValid: true, token: access_token } : { isValid: false, token: "" };
    } catch (err) {
-      generalLogger.error(`[isTokenValid Func] - ${err}.`);
+      Logger.error(`[isTokenValid Func] - ${err}.`);
       return false;
    }
 };

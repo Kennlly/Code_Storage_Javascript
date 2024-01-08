@@ -1,13 +1,13 @@
 import { Sequelize } from "sequelize";
-import { SQL_DATABASE, SQL_PW, SQL_SERVER, SQL_USER } from "../utils/constants.js";
-import { generalLogger } from "./winstonConfig.js";
+import { SQL_DATABASE, SQL_PW, SQL_SERVER, SQL_USER, SQL_PORT } from "../utils/constants.js";
+import { Logger } from "./winstonConfig.js";
 
 const buildSequelizeInstance = async () => {
    try {
       const instance = new Sequelize(SQL_DATABASE, SQL_USER, SQL_PW, {
          host: SQL_SERVER,
          dialect: "mssql",
-         port: 1433,
+         port: SQL_PORT,
          timezone: "Eastern Standard Time",
          // logging: (msg) => generalLogger.debug(msg),
          logging: false,
@@ -35,7 +35,7 @@ const buildSequelizeInstance = async () => {
 
       return instance;
    } catch (err) {
-      generalLogger.error(`[buildSequelizeInstance Func] Catching ERROR - ${err}`);
+      Logger.error(`[buildSequelizeInstance Func] Catching ERROR - ${err}`);
       return false;
    }
 };

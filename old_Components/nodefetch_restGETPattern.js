@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../ProjectTree/config/winstonConfig.js";
+import { Logger } from "../ProjectTree/config/winstonConfig.js";
 import getToken from "../ProjectTree/controllers/getToken.js";
 
 export default async function restGETPattern(apiEndpoint) {
@@ -12,7 +12,7 @@ export default async function restGETPattern(apiEndpoint) {
          // Ensure token is valid
          const genesysToken = await getToken();
          if (genesysToken === false) {
-            generalLogger.error(`restGETPattern Func - Genesys token validation ERROR!`);
+            Logger.error(`restGETPattern Func - Genesys token validation ERROR!`);
             return false;
          }
 
@@ -35,7 +35,7 @@ export default async function restGETPattern(apiEndpoint) {
             // Known issue - Calling apis too frequently
             await setTimeout(60000);
          } else {
-            generalLogger.error(
+            Logger.error(
                `restGETPattern Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter}.`,
             );
             if (retryCounter === 3) break;
@@ -44,7 +44,7 @@ export default async function restGETPattern(apiEndpoint) {
             retryCounter++;
          }
       } catch (err) {
-         generalLogger.error(`restGETPattern Func ${err}. Retrying on ${retryCounter}.`);
+         Logger.error(`restGETPattern Func ${err}. Retrying on ${retryCounter}.`);
          if (retryCounter === 3) break;
 
          await setTimeout(10000 * retryCounter);
@@ -52,6 +52,6 @@ export default async function restGETPattern(apiEndpoint) {
       }
    }
 
-   generalLogger.error(`restGETPattern Func ERROR after ${retryCounter} times retries! ${funcNote}`);
+   Logger.error(`restGETPattern Func ERROR after ${retryCounter} times retries! ${funcNote}`);
    return false;
 }

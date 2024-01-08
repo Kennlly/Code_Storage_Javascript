@@ -1,6 +1,6 @@
 import { CALABRIO_RTA_ENDPOINT_URL } from "../../utils/constants.js";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../../config/winstonConfig.js";
+import { Logger } from "../../config/winstonConfig.js";
 import AxiosConfig from "../../config/axiosConfig.js";
 
 export default async function soapAPIService(requestMethod, endpoint, soapAction, queryBody) {
@@ -8,7 +8,7 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
    const funcArgus = `[Rest Method = ${requestMethod}; API Endpoint = ${endpoint}; Soap Action = ${soapAction}; Query body = ${queryBody}]`;
 
    if (AxiosConfig === false) {
-      generalLogger.error(`${funcName} - Axios Configuration ERROR!`);
+      Logger.error(`${funcName} - Axios Configuration ERROR!`);
       return false;
    }
 
@@ -29,7 +29,7 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
          request.data = queryBody;
          break;
       default:
-         generalLogger.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
+         Logger.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
          return false;
    }
 
@@ -38,7 +38,7 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
          return await AxiosConfig(request);
       } catch (err) {
          if (typeof err === "string") {
-            generalLogger.error(`${funcName} ${funcArgus} - ${err}`);
+            Logger.error(`${funcName} ${funcArgus} - ${err}`);
             return false;
          }
 
@@ -47,7 +47,7 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
          let fullErrMsg = `Response Code = ${responseCode}; Status Text = ${statusText}`;
          if (description) fullErrMsg += `; Description = ${description}`;
 
-         generalLogger.error(`${funcName} - ${fullErrMsg}. Retrying on ${retryCounter} / 3.`);
+         Logger.error(`${funcName} - ${fullErrMsg}. Retrying on ${retryCounter} / 3.`);
 
          if (retryCounter === 3) break;
 
@@ -56,6 +56,6 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
       }
    }
 
-   generalLogger.error(`${funcName} ${funcArgus} - ERROR After 3 Times Retries!`);
+   Logger.error(`${funcName} ${funcArgus} - ERROR After 3 Times Retries!`);
    return false;
 }

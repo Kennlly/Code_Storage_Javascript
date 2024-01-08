@@ -11,7 +11,8 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
 });
 
 const customizeLog = (category) => {
-   const customizeDir = `${LOG_FOLDER}${category}${Path.sep}`;
+   // const customizeDir = `${LOG_FOLDER}${category}${Path.sep}`;
+   const customizeDir = `${LOG_FOLDER}${Path.sep}`;
    const transport = new dailyRotateFile({
       dirname: customizeDir,
       filename: "%DATE%.log",
@@ -25,7 +26,9 @@ const customizeLog = (category) => {
          transport,
          new transports.Console({
             format: combine(
-               format.colorize(),
+               format.colorize({
+                  colors: { warn: "magenta", error: "bold red cyanBG" },
+               }),
                timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
                format.errors({ stack: true }),
                logFormat,
@@ -35,4 +38,6 @@ const customizeLog = (category) => {
    });
 };
 
-export const generalLogger = customizeLog("general");
+const Logger = customizeLog();
+
+export default Logger;

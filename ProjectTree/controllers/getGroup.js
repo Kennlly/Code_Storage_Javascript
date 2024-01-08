@@ -1,4 +1,4 @@
-import { generalLogger } from "../config/winstonConfig.js";
+import { Logger } from "../config/winstonConfig.js";
 import { fetchGroup } from "../service/lookupsService.js";
 import groupEntity from "../entity/groupEntity.js";
 import groupMapper from "../mapper/groupMapper.js";
@@ -15,12 +15,12 @@ export default async function getGroup() {
       const groupData = groupMapper(data);
       if (groupData === false) return false;
       if (groupData.length === 0) {
-         generalLogger.error(`${funcName} - Unexpected EMPTY extracted data!`);
+         Logger.error(`${funcName} - Unexpected EMPTY extracted data!`);
          return false;
       }
 
       if (groupEntity === false) {
-         generalLogger.error(`${funcName} - Sequelize Configuration ERROR`);
+         Logger.error(`${funcName} - Sequelize Configuration ERROR`);
          return false;
       }
 
@@ -46,10 +46,10 @@ export default async function getGroup() {
          ),
       );
 
-      generalLogger.info(`${funcName} - Completed!`);
+      Logger.info(`${funcName} - Completed!`);
       return true;
    } catch (err) {
-      generalLogger.error(`${funcName} Catching ERROR - ${err}`);
+      Logger.error(`${funcName} Catching ERROR - ${err}`);
       return false;
    }
 }

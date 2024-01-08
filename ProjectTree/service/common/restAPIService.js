@@ -1,7 +1,7 @@
 import { GENESYS_ENDPOINT_URL } from "../../utils/constants.js";
 import getToken from "../../controllers/getToken.js";
 import { setTimeout } from "timers/promises";
-import { generalLogger } from "../../config/winstonConfig.js";
+import { Logger } from "../../config/winstonConfig.js";
 import AxiosConfig from "../../config/axiosConfig.js";
 
 export default async function restAPIService(requestMethod, endpoint, params, queryBody) {
@@ -11,7 +11,7 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
    )}; Query body = ${queryBody}]`;
 
    if (AxiosConfig === false) {
-      generalLogger.error(`${funcName} - Axios Configuration ERROR!`);
+      Logger.error(`${funcName} - Axios Configuration ERROR!`);
       return false;
    }
 
@@ -25,7 +25,7 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
    // Ensure Genesys Token is valid
    const genesysToken = await getToken();
    if (genesysToken === false) {
-      generalLogger.error(`${funcName} ${funcArgus} - Get Genesys Token ERROR!`);
+      Logger.error(`${funcName} ${funcArgus} - Get Genesys Token ERROR!`);
       return false;
    }
    request.headers.Authorization = `Bearer ${genesysToken}`;
@@ -38,7 +38,7 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
          request.data = queryBody;
          break;
       default:
-         generalLogger.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
+         Logger.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
          return false;
    }
 
@@ -49,7 +49,7 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
          return await AxiosConfig(request);
       } catch (err) {
          if (typeof err === "string") {
-            generalLogger.error(`${funcName} ${funcArgus} - ${err}`);
+            Logger.error(`${funcName} ${funcArgus} - ${err}`);
             return false;
          }
 
@@ -62,7 +62,7 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
             let fullErrMsg = `Response Code = ${responseCode}; Status Text = ${statusText}`;
             if (description) fullErrMsg += `; Description = ${description}`;
 
-            generalLogger.error(`${funcName} - ${fullErrMsg}. Retrying on ${retryCounter} / 3.`);
+            Logger.error(`${funcName} - ${fullErrMsg}. Retrying on ${retryCounter} / 3.`);
 
             if (retryCounter === 3) break;
 
@@ -72,7 +72,7 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
       }
    }
 
-   generalLogger.error(`${funcName} ${funcArgus} - ERROR After 3 Times Retries!`);
+   Logger.error(`${funcName} ${funcArgus} - ERROR After 3 Times Retries!`);
    return false;
 }
 

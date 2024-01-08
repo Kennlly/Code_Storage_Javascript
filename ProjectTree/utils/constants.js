@@ -27,6 +27,7 @@ const detectEnv = () => {
 
 const APP_RUNNING_ENV = detectEnv();
 
+// Folder Paths
 const defineProjectFolder = () => {
    if (APP_RUNNING_ENV === "Local") return "/Volumes/JSAndTS/Javascript/Code_Storage_Javascript/ProjectTree/";
    if (APP_RUNNING_ENV === "Office") return "C:/???";
@@ -35,7 +36,7 @@ const defineProjectFolder = () => {
 const PROJECT_FOLDER = defineProjectFolder();
 
 export const LOG_FOLDER = `${PROJECT_FOLDER}log${Path["sep"]}`;
-const DATASTORAGE_FOLDER = `${PROJECT_FOLDER}dataStorage${Path["sep"]}`;
+export const DATASTORAGE_FOLDER = `${PROJECT_FOLDER}dataStorage${Path["sep"]}`;
 export const INFO_FOLDER = `${PROJECT_FOLDER}info${Path["sep"]}`;
 
 Dotenv.config({ path: `${PROJECT_FOLDER}.env` });
@@ -57,20 +58,24 @@ const GENESYS_CLIENT_SECRET_IV = process["env"]["GENESYS_CLIENT_SECRET_IV"];
 const GENESYS_CLIENT_SECRET_CONTENT = process["env"]["GENESYS_CLIENT_SECRET_CONTENT"];
 const GENESYS_CLIENT_SECRET = decrypt(GENESYS_CLIENT_SECRET_IV, GENESYS_CLIENT_SECRET_CONTENT);
 
+// SQL Database Config
 export const SQL_DATABASE = process["env"]["SQL_DATABASE"];
 export const SQL_SERVER = process["env"]["SQL_SERVER"];
+export const SQL_PORT = process["env"]["SQL_PORT"];
 export const SQL_USER = process["env"]["SQL_USER"];
 const SQL_PW_IV = process["env"]["SQL_PW_IV"];
 const SQL_PW_CONTENT = process["env"]["SQL_PW_CONTENT"];
 export const SQL_PW = decrypt(SQL_PW_IV, SQL_PW_CONTENT);
 
+// Node Mailer Config
+export const EMAIL_HOST = process["env"]["EMAIL_HOST"];
+export const EMAIL_PORT = process["env"]["EMAIL_PORT"];
 export const EMAIL_USER = process["env"]["EMAIL_USER"];
+export const EMAIL_RECIPIENTS = process["env"]["EMAIL_RECIPIENTS"];
+export const EMAIL_CC_RECIPIENTS = process["env"]["EMAIL_CC_RECIPIENTS"];
 const EMAIL_PW_IV = process["env"]["EMAIL_PW_IV"];
 const EMAIL_PW_CONTENT = process["env"]["EMAIL_PW_CONTENT"];
 export const EMAIL_PW = decrypt(EMAIL_PW_IV, EMAIL_PW_CONTENT);
-
-export const EMAIL_RECIPIENTS = process["env"]["EMAIL_RECIPIENTS"];
-export const EMAIL_CC_RECIPIENTS = process["env"]["EMAIL_CC_RECIPIENTS"];
 
 export {
    // General fields

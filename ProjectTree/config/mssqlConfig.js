@@ -1,4 +1,4 @@
-import { generalLogger } from "./winstonConfig.js";
+import Logger from "./winstonConfig.js";
 import { SQL_DATABASE, SQL_SERVER, SQL_USER, SQL_PW } from "../utils/constants.js";
 
 export default function buildMsSQLInstance(poolName) {
@@ -48,7 +48,7 @@ export default function buildMsSQLInstance(poolName) {
          },
       };
    } catch (err) {
-      generalLogger.error(`${funcNote} Catching ERROR - ${err}.`);
+      Logger.error(`${funcNote} Catching ERROR - ${err}.`);
       return false;
    }
 }

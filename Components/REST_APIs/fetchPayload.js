@@ -9,7 +9,7 @@ export default async function fetchPayload(lob, jobId) {
 
       return fullPayload;
    } catch (err) {
-      generalLogger.error(`fetchPayload Func ${err} ${funcNote}`);
+      Logger.error(`fetchPayload Func ${err} ${funcNote}`);
       return false;
    }
 }
@@ -48,19 +48,19 @@ const fetchPayloadRecursionHelper = async (lob, jobId, cursor, fullPayload) => {
             // Known issue - Calling apis too frequently
             await forceThreadSleep(120000 * retryCounter);
          } else {
-            generalLogger.error(
-               `fetchPayloadRecursionHelper Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter} / 3.`
+            Logger.error(
+               `fetchPayloadRecursionHelper Func - Response code = ${responseCode}; Error Msg = ${errorMsg}. Retrying on ${retryCounter} / 3.`,
             );
             await forceThreadSleep(10000 * retryCounter);
          }
       } catch (err) {
-         generalLogger.error(`fetchPayloadRecursionHelper Func ${err} Retrying on ${retryCounter} / 3.`);
+         Logger.error(`fetchPayloadRecursionHelper Func ${err} Retrying on ${retryCounter} / 3.`);
          await forceThreadSleep(10000 * retryCounter);
       }
 
       retryCounter++;
    }
 
-   generalLogger.error(`fetchPayloadRecursionHelper Func ERROR after 3 times retries! ${funcNote}`);
+   Logger.error(`fetchPayloadRecursionHelper Func ERROR after 3 times retries! ${funcNote}`);
    return false;
 };
