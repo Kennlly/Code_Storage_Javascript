@@ -1,6 +1,6 @@
 //npm node-fetch
 import fetch from "node-fetch";
-import { Logger } from "../ProjectTree/config/winstonConfig.js";
+import { LOGGER } from "../ProjectTree/config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
 import getToken from "../ProjectTree/controllers/getToken.js";
 

@@ -18,7 +18,7 @@ const basicDELETEMethod = async (apiEndPoint) => {
          const jsonResponse = await response.json();
          const errorMsg = jsonResponse.message;
          const errorCode = jsonResponse.status;
-         Logger.error(
+         LOGGER.error(
             `basicDELETEMethod Func - Requesting ERROR. Endpoint = ${apiEndPoint}. Response code = ${errorCode}. Error Msg = ${errorMsg}. Retrying on ${retryCounter} / 3.`,
          );
          await forceProcessSleep(3000 * retryCounter);
@@ -28,7 +28,7 @@ const basicDELETEMethod = async (apiEndPoint) => {
 
       return false;
    } catch (err) {
-      Logger.error(`basicDELETEMethod Func ${err}. APIEndPoint = ${apiEndPoint}.`);
+      LOGGER.error(`basicDELETEMethod Func ${err}. APIEndPoint = ${apiEndPoint}.`);
       return false;
    }
 };

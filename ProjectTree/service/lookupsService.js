@@ -1,6 +1,6 @@
 import { GENESYS_ENDPOINT_URL } from "../utils/constants.js";
 import restGETPattern from "../../old_Components/nodefetch_restGETPattern.js";
-import { Logger } from "../config/winstonConfig.js";
+import { LOGGER } from "../config/winstonConfig.js";
 import restAPIService from "./common/restAPIService.js";
 
 const fetchLookupPattern = async (apiEndpoint) => {

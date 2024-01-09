@@ -11,7 +11,7 @@ export default async function validatedToken() {
       // new syntax:
       ({ access_token } = newToken);
    } catch (err) {
-      Logger.error(`validatedToken Func ${err}`);
+      LOGGER.error(`validatedToken Func ${err}`);
       return false;
    }
 }

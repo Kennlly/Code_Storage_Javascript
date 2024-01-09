@@ -1,7 +1,7 @@
 import Schedule from "node-schedule";
 import { APP_RUNNING_ENV } from "../utils/constants.js";
-import Logger from "../config/winstonConfig.js";
-import { zipFolder } from "../utils/fileController.js";
+import LOGGER from "../config/winstonConfig.js";
+import { zipFolder } from "../utils/fileManagement.js";
 import Ip from "ip";
 // import integrateMainDailyJob from "./integrateMainDailyJob.js";
 
@@ -28,4 +28,4 @@ if (APP_RUNNING_ENV === "DEV" || APP_RUNNING_ENV === "UAT1" || APP_RUNNING_ENV =
    return new Error("Unknown running environment!");
 }
 
-Logger.info(`The ??? Service STARTS!`);
+LOGGER.info(`The ??? Service STARTS!`);

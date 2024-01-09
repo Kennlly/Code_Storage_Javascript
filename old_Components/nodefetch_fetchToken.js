@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { Logger } from "../ProjectTree/config/winstonConfig.js";
+import { LOGGER } from "../ProjectTree/config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
 import { GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET } from "../ProjectTree/utils/constants.js";
 

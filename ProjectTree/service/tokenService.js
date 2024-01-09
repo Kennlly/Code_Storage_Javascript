@@ -1,13 +1,11 @@
 import Axios from "axios";
 import { GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET } from "../utils/constants.js";
 import { setTimeout } from "timers/promises";
-import { Logger } from "../config/winstonConfig.js";
+import LOGGER from "../config/winstonConfig.js";
 
 export default async function fetchToken() {
-   const funcName = "[fetchToken Func]";
+   const funcName = "[tokenService Func]";
 
-   // const apiEndpoint = "https://login.usw2.pure.cloud/oauth/token";
-   // OR
    const apiEndpoint = "https://login.cac1.pure.cloud/oauth/token";
 
    let retryCounter = 1;
@@ -22,8 +20,6 @@ export default async function fetchToken() {
             },
             headers: {
                "Content-Type": "application/x-www-form-urlencoded",
-               // Authorization: `Basic ${basicToken}`,
-               // OR
                Authorization: `Basic ${Buffer.from(GENESYS_CLIENT_ID + ":" + GENESYS_CLIENT_SECRET).toString("base64")}`,
             },
          });
@@ -36,7 +32,7 @@ export default async function fetchToken() {
             // Known issue - Calling API too frequently
             await setTimeout(60000);
          } else {
-            Logger.error(
+            LOGGER.error(
                `${funcName} - Response code = ${status}; Error Msg = ${statusText}. Retrying on ${retryCounter} / 3.`,
             );
 
@@ -49,14 +45,14 @@ export default async function fetchToken() {
          const errResponse = err["response"];
 
          if (!errResponse) {
-            Logger.error(`${funcName} - ${err.toString()}`);
+            LOGGER.error(`${funcName} - ${err.toString()}`);
          } else {
             const {
                data: { message },
                status,
                statusText,
             } = err["response"];
-            Logger.error(`${funcName} - Response Code = ${status}. Status Text = ${statusText}. Description: ${message}`);
+            LOGGER.error(`${funcName} - Response Code = ${status}. Status Text = ${statusText}. Description: ${message}`);
          }
 
          if (retryCounter === 3) break;
@@ -66,6 +62,6 @@ export default async function fetchToken() {
       }
    }
 
-   Logger.error(`${funcName} - ERROR after 3 times retries!`);
+   LOGGER.error(`${funcName} - ERROR after 3 times retries!`);
    return false;
 }

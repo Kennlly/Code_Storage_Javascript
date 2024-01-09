@@ -1,7 +1,8 @@
-import { CALABRIO_RTA_ENDPOINT_URL } from "../../utils/constants.js";
+import { CALABRIO_RTA_ENDPOINT_URL, INFO_FOLDER } from "../../utils/constants.js";
 import { setTimeout } from "timers/promises";
-import { Logger } from "../../config/winstonConfig.js";
+import { LOGGER } from "../../config/winstonConfig.js";
 import AxiosConfig from "../../config/axiosConfig.js";
+import { deleteFile } from "../../utils/fileManagement.js";
 
 export default async function soapAPIService(requestMethod, endpoint, soapAction, queryBody) {
    const funcName = "[soapAPIService Func]";
@@ -48,6 +49,14 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
          if (description) fullErrMsg += `; Description = ${description}`;
 
          Logger.error(`${funcName} - ${fullErrMsg}. Retrying on ${retryCounter} / 3.`);
+
+         switch (responseCode) {
+            case 400:
+               // No need to retry
+               return false;
+            default:
+               break;
+         }
 
          if (retryCounter === 3) break;
 

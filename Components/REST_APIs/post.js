@@ -29,12 +29,12 @@ const getPOSTMethodQueryTotal = async (category, queryInterval, agentID = null) 
 
       const data = await basicPOSTMethod(apiEndPoint, apiQueryBody);
       if (!data) {
-         Logger.error(`getPOSTMethodQueryTotal Func - Requesting API ERROR! ${queryNote}`);
+         LOGGER.error(`getPOSTMethodQueryTotal Func - Requesting API ERROR! ${queryNote}`);
          return false;
       }
       return data.totalHits;
    } catch (err) {
-      Logger.error(`getPOSTMethodQueryTotal Func ${err}. ${queryNote}`);
+      LOGGER.error(`getPOSTMethodQueryTotal Func ${err}. ${queryNote}`);
       return false;
    }
 };
@@ -53,7 +53,7 @@ const definePOSTMethodQueryIntervals = async (category, initialInterval, agentID
          const initialTotalCnt = await getPOSTMethodQueryTotal(category, initialInterval, agentID);
          if (initialTotalCnt <= 100000) return [initialInterval];
 
-         Logger.info(`Define POST method query intervals function triggered. Initial Interval = ${initialInterval}.`);
+         LOGGER.info(`Define POST method query intervals function triggered. Initial Interval = ${initialInterval}.`);
          let intervalResult = [];
          let forwardingStartTime = initialStartTime.clone();
          while (forwardingStartTime < initialEndTime) {
@@ -79,13 +79,13 @@ const definePOSTMethodQueryIntervals = async (category, initialInterval, agentID
                forwardingStartTime = forwardingEndTime.clone();
             }
          }
-         Logger.info(
+         LOGGER.info(
             `Define POST method query intervals function finished. Interval result = ${JSON.stringify(intervalResult)}.`,
          );
          return intervalResult;
       }
 
-      Logger.info(`Define POST method query intervals function triggered. Initial Interval = ${initialInterval}.`);
+      LOGGER.info(`Define POST method query intervals function triggered. Initial Interval = ${initialInterval}.`);
       let intervalResult = [];
       let forwardingStartTime = initialStartTime.clone();
       while (forwardingStartTime < initialEndTime) {
@@ -114,10 +114,10 @@ const definePOSTMethodQueryIntervals = async (category, initialInterval, agentID
             forwardingStartTime = forwardingEndTime.clone();
          }
       }
-      Logger.info(`Define POST method query intervals function finished. Interval result = ${JSON.stringify(intervalResult)}.`);
+      LOGGER.info(`Define POST method query intervals function finished. Interval result = ${JSON.stringify(intervalResult)}.`);
       return intervalResult;
    } catch (err) {
-      Logger.error(
+      LOGGER.error(
          `definePOSTMethodQueryIntervals Func ${err}. Category = ${category}, Initial interval = ${initialInterval}, AgentID = ${agentID}.`,
       );
       return false;

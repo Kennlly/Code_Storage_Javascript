@@ -5,14 +5,14 @@ const readTXTFile = async (fileName) => {
    try {
       const isTXTFileExist = await isFileExist(filePath);
       if (!isTXTFileExist) {
-         Logger.error(`File ${filePath} is NOT exist!`);
+         LOGGER.error(`File ${filePath} is NOT exist!`);
          await writeTXTFile(fileName, "");
          return "";
       }
 
       return await fs.readFile(filePath, "utf-8");
    } catch (err) {
-      Logger.error(`readTXTFile Func reading ${filePath} ${err}`);
+      LOGGER.error(`readTXTFile Func reading ${filePath} ${err}`);
       return false;
    }
 };
@@ -22,7 +22,7 @@ const readJSONFile = async (fileName) => {
    try {
       const isJSONFileExist = await isFileExist(filePath);
       if (!isJSONFileExist) {
-         Logger.error(`File ${filePath} is NOT exist!`);
+         LOGGER.error(`File ${filePath} is NOT exist!`);
          await writeJSONFile(fileName, {});
          return {};
       }
@@ -31,10 +31,10 @@ const readJSONFile = async (fileName) => {
       try {
          return JSON.parse(data);
       } catch (err) {
-         Logger.error(`Converting ${fileName}.json ${err}`);
+         LOGGER.error(`Converting ${fileName}.json ${err}`);
       }
    } catch (err) {
-      Logger.error(`readJSONFile Func reading ${filePath} ${err}`);
+      LOGGER.error(`readJSONFile Func reading ${filePath} ${err}`);
       return false;
    }
 };

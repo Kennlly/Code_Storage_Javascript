@@ -1,17 +1,18 @@
-import { GENESYS_ENDPOINT_URL } from "../../utils/constants.js";
+import { GENESYS_ENDPOINT_URL, INFO_FOLDER } from "../../utils/constants.js";
 import getToken from "../../controllers/getToken.js";
 import { setTimeout } from "timers/promises";
-import { Logger } from "../../config/winstonConfig.js";
+import LOGGER from "../../config/winstonConfig.js";
 import AxiosConfig from "../../config/axiosConfig.js";
+import { deleteFile } from "../../utils/fileManagement.js";
 
 export default async function restAPIService(requestMethod, endpoint, params, queryBody) {
    const funcName = "[restAPIService Func]";
    const funcArgus = `[Rest Method = ${requestMethod}; API Endpoint = ${endpoint}; Params = ${JSON.stringify(
       params,
-   )}; Query body = ${queryBody}]`;
+   )}; Query body = ${JSON.stringify(queryBody)}]`;
 
    if (AxiosConfig === false) {
-      Logger.error(`${funcName} - Axios Configuration ERROR!`);
+      LOGGER.error(`${funcName} - Axios Configuration ERROR!`);
       return false;
    }
 
@@ -22,14 +23,6 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
       url: endpoint,
    };
 
-   // Ensure Genesys Token is valid
-   const genesysToken = await getToken();
-   if (genesysToken === false) {
-      Logger.error(`${funcName} ${funcArgus} - Get Genesys Token ERROR!`);
-      return false;
-   }
-   request.headers.Authorization = `Bearer ${genesysToken}`;
-
    switch (requestMethod) {
       case "GET":
          if (params) request.params = params;
@@ -38,7 +31,7 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
          request.data = queryBody;
          break;
       default:
-         Logger.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
+         LOGGER.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
          return false;
    }
 
@@ -46,10 +39,18 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
 
    while (true) {
       try {
+         // Ensure Genesys Token is valid
+         const genesysToken = await getToken();
+         if (genesysToken === false) {
+            LOGGER.error(`${funcName} ${funcArgus} - Get Genesys Token ERROR!`);
+            return false;
+         }
+         request.headers.Authorization = `Bearer ${genesysToken}`;
+
          return await AxiosConfig(request);
       } catch (err) {
          if (typeof err === "string") {
-            Logger.error(`${funcName} ${funcArgus} - ${err}`);
+            LOGGER.error(`${funcName} ${funcArgus} - ${err}`);
             return false;
          }
 
@@ -62,7 +63,18 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
             let fullErrMsg = `Response Code = ${responseCode}; Status Text = ${statusText}`;
             if (description) fullErrMsg += `; Description = ${description}`;
 
-            Logger.error(`${funcName} - ${fullErrMsg}. Retrying on ${retryCounter} / 3.`);
+            LOGGER.error(`${funcName} - ${fullErrMsg}. Retrying on ${retryCounter} / 3.`);
+
+            switch (responseCode) {
+               case 400:
+                  // No need to retry
+                  return false;
+               case 401:
+                  await deleteFile(`${INFO_FOLDER}genesysToken.json`);
+                  break;
+               default:
+                  break;
+            }
 
             if (retryCounter === 3) break;
 
@@ -72,7 +84,7 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
       }
    }
 
-   Logger.error(`${funcName} ${funcArgus} - ERROR After 3 Times Retries!`);
+   LOGGER.error(`${funcName} ${funcArgus} - ERROR After 3 Times Retries!`);
    return false;
 }
 

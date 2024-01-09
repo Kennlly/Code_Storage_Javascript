@@ -1,6 +1,6 @@
 import Axios from "axios";
 import Https from "node:https";
-import Logger from "./winstonConfig.js";
+import LOGGER from "./winstonConfig.js";
 
 const buildAxiosInstance = () => {
    try {
@@ -29,7 +29,7 @@ const buildAxiosInstance = () => {
 
       return instance;
    } catch (err) {
-      Logger.error(`[buildAxiosInstance Func] Catching ERROR - ${err}`);
+      LOGGER.error(`[buildAxiosInstance Func] Catching ERROR - ${err}`);
       return false;
    }
 };

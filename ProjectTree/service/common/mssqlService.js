@@ -1,5 +1,5 @@
 import Sql from "mssql";
-import { Logger } from "../../config/winstonConfig.js";
+import { LOGGER } from "../../config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
 import buildMsSQLInstance from "../../config/mssqlConfig.js";
 

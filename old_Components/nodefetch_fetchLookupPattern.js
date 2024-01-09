@@ -1,5 +1,5 @@
 import restGETPattern from "./nodefetch_restGETPattern.js";
-import { Logger } from "../ProjectTree/config/winstonConfig.js";
+import { LOGGER } from "../ProjectTree/config/winstonConfig.js";
 import { GENESYS_ENDPOINT_URL } from "../ProjectTree/utils/constants.js";
 
 export default async function fetchLookupPattern(apiEndpoint) {

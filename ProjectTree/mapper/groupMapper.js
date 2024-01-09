@@ -1,5 +1,5 @@
 import Moment from "moment";
-import { Logger } from "../config/winstonConfig.js";
+import { LOGGER } from "../config/winstonConfig.js";
 
 export default function groupMapper(payload) {
    const funcNote = `[groupMapper Func] [payload = ${JSON.stringify(payload)}]`;

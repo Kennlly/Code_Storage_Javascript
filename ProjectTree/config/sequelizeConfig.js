@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import { SQL_DATABASE, SQL_PW, SQL_SERVER, SQL_USER, SQL_PORT } from "../utils/constants.js";
-import { Logger } from "./winstonConfig.js";
+import { LOGGER } from "./winstonConfig.js";
 
 const buildSequelizeInstance = async () => {
    try {

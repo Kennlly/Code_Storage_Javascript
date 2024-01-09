@@ -1,7 +1,7 @@
 import AdmZip from "adm-zip";
 import Moment from "moment";
 import { promises as FS } from "fs";
-import { Logger } from "../config/winstonConfig.js";
+import LOGGER from "../config/winstonConfig.js";
 
 export const writeFile = async (filePath, category, content) => {
    const funcName = "[writeFile Func]";
@@ -11,7 +11,7 @@ export const writeFile = async (filePath, category, content) => {
 
    //handle writing txt or json file
    if (category !== "json" && category !== "txt") {
-      Logger.error(`${funcName} - File category ERROR! Category = ${category}`);
+      LOGGER.error(`${funcName} - File category ERROR! Category = ${category}`);
       return false;
    }
 
@@ -20,10 +20,10 @@ export const writeFile = async (filePath, category, content) => {
 
       await FS.writeFile(fullFilePath, fileContent);
 
-      Logger.info(`${funcName} - Writing "${filePath}" Succeed!`);
+      LOGGER.info(`${funcName} - Writing "${fullFilePath}" Succeed!`);
       return true;
    } catch (err) {
-      Logger.error(`${funcName} Catching ERROR - ${err}\n${funcArgus} `);
+      LOGGER.error(`${funcName} Catching ERROR - ${err}\n${funcArgus} `);
       return false;
    }
 };
@@ -33,7 +33,7 @@ export const isFileExist = async (filePath) => {
       await FS.access(filePath);
       return true;
    } catch {
-      Logger.debug(`[isFileExist Func] - "${filePath}" is NOT Exist.`);
+      LOGGER.debug(`[isFileExist Func] - "${filePath}" is NOT Exist.`);
       return false;
    }
 };
@@ -44,7 +44,7 @@ export const readFile = async (filePath, category) => {
 
    //handle reading txt or json file
    if (category !== "json" && category !== "txt") {
-      Logger.error(`${funcName} - File category ERROR! Category = ${category}`);
+      LOGGER.error(`${funcName} - File category ERROR! Category = ${category}`);
       return false;
    }
 
@@ -68,11 +68,11 @@ export const readFile = async (filePath, category) => {
       try {
          return JSON.parse(data);
       } catch (err) {
-         Logger.error(`${funcName} - Parsing JSON ERROR. ${funcArgus}`);
+         LOGGER.error(`${funcName} - Parsing JSON ERROR. ${funcArgus}`);
          return {};
       }
    } catch (err) {
-      Logger.error(`${funcName} Catching ERROR - ${err}. ${funcArgus}`);
+      LOGGER.error(`${funcName} Catching ERROR - ${err}. ${funcArgus}`);
       return false;
    }
 };
@@ -88,7 +88,7 @@ export const appendFile = async (filePath, content) => {
 
       return true;
    } catch (err) {
-      Logger.error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
+      LOGGER.error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
       return false;
    }
 };
@@ -100,10 +100,10 @@ export const moveFile = async (sourceFilePath, destinationFilePath) => {
    try {
       await FS.rename(sourceFilePath, destinationFilePath);
 
-      Logger.info(`${funcName} ${funcArgus} Succeed!`);
+      LOGGER.info(`${funcName} ${funcArgus} Succeed!`);
       return true;
    } catch (err) {
-      Logger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
+      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
       return false;
    }
 };
@@ -115,10 +115,10 @@ export const copyFile = async (sourceFilePath, destinationFilePath) => {
    try {
       await FS.copyFile(sourceFilePath, destinationFilePath);
 
-      Logger.info(`${funcName} ${funcArgus} Succeed!`);
+      LOGGER.info(`${funcName} ${funcArgus} Succeed!`);
       return true;
    } catch (err) {
-      Logger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
+      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
       return false;
    }
 };
@@ -130,10 +130,10 @@ export const deleteFile = async (filePath) => {
    try {
       await FS.unlink(filePath);
 
-      Logger.info(`${funcName} ${funcArgus} Succeed!`);
+      LOGGER.info(`${funcName} ${funcArgus} Succeed!`);
       return true;
    } catch (err) {
-      Logger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
+      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
       return false;
    }
 };
@@ -145,7 +145,7 @@ export const getFileList = async (folderPath) => {
    try {
       return await FS.readdir(folderPath);
    } catch (err) {
-      Logger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
+      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
       return false;
    }
 };
@@ -160,7 +160,7 @@ export const zipFolder = async (folderPath, fileExtension) => {
       // Get an original full file list
       const fullFileList = await getFileList(folderPath);
       if (fullFileList.length === 0) {
-         Logger.info(`${funcName} ${funcArgus} - The file folder is EMPTY.`);
+         LOGGER.info(`${funcName} ${funcArgus} - The file folder is EMPTY.`);
          return true;
       }
 
@@ -174,7 +174,7 @@ export const zipFolder = async (folderPath, fileExtension) => {
          return fileDateStr === backwardOneMonthDateStr && extension === fileExtension;
       });
       if (filteredFileList.length === 0) {
-         Logger.info(`${funcName} ${funcArgus} - There are NO such files for "${backwardOneMonthDateStr}".`);
+         LOGGER.info(`${funcName} ${funcArgus} - There are NO such files for "${backwardOneMonthDateStr}".`);
          return true;
       }
 
@@ -187,10 +187,10 @@ export const zipFolder = async (folderPath, fileExtension) => {
          await deleteFile(`${folderPath}${file}`);
       }
 
-      Logger.info(`${funcName} ${funcArgus} - Zip and Remove files for "${backwardOneMonthDateStr}" Succeed!`);
+      LOGGER.info(`${funcName} ${funcArgus} - Zip and Remove files for "${backwardOneMonthDateStr}" Succeed!`);
       return true;
    } catch (err) {
-      Logger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}.`);
+      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}.`);
       return false;
    }
 };

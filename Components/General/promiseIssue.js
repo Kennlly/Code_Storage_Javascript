@@ -11,7 +11,7 @@ const badIntegrateStatisticsFlow = async () => {
       const postQueueStatResult = await queueStatFlow();
       return postAgentStatResult && postAgentQueueStatResult && postQueueStatResult;
    } catch (err) {
-      Logger.error(`integrateStatisticsFlow Func ${err}`);
+      LOGGER.error(`integrateStatisticsFlow Func ${err}`);
       return false;
    }
 };
@@ -31,7 +31,7 @@ const goodIntegrateStatisticsFlow = async () => {
 
       return postAgentStatResult && postAgentQueueStatResult && postQueueStatResult;
    } catch (err) {
-      Logger.error(`integrateStatisticsFlow Func ${err}`);
+      LOGGER.error(`integrateStatisticsFlow Func ${err}`);
       return false;
    }
 };

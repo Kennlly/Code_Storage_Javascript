@@ -1,5 +1,5 @@
 import Moment from "moment";
-import { Logger } from "../config/winstonConfig.js";
+import LOGGER from "../config/winstonConfig.js";
 
 export default function defineIntervals(
    startTime,
@@ -12,7 +12,7 @@ export default function defineIntervals(
    const funcArgus = `[Start Time = ${startTime}; End Time = ${endTime}; Input Datetime String Pattern = ${inputDatetimeStrPattern}; Output Datetime String Pattern = ${outputDatetimeStrPattern}; Required Interval In Min =${requiredIntervalInMin}]`;
 
    if (!startTime || !endTime || !inputDatetimeStrPattern || !outputDatetimeStrPattern || !requiredIntervalInMin) {
-      Logger.error(`${funcName} - Missing Required Arguments ERROR! ${funcArgus} `);
+      LOGGER.error(`${funcName} - Missing Required Arguments ERROR! ${funcArgus} `);
       return false;
    }
 
@@ -22,14 +22,14 @@ export default function defineIntervals(
       const momentEndTimestamp = Moment(endTime, inputDatetimeStrPattern, true);
       const isEndValid = momentEndTimestamp.isValid();
       if (!isStartValid || !isEndValid) {
-         Logger.error(`${funcName} - Invalid startTime and/or endTime ERROR! ${funcArgus}`);
+         LOGGER.error(`${funcName} - Invalid startTime and/or endTime ERROR! ${funcArgus}`);
          return false;
       }
 
       const diff = momentEndTimestamp.diff(momentStartTimestamp, "minute");
 
       if (diff < 0) {
-         Logger.error(`${funcName} - End time is EARLIER than start time! ${funcArgus}`);
+         LOGGER.error(`${funcName} - End time is EARLIER than start time! ${funcArgus}`);
          return false;
       }
 
@@ -57,7 +57,7 @@ export default function defineIntervals(
 
       return definedIntervals;
    } catch (err) {
-      Logger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}.`);
+      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}.`);
       return false;
    }
 }

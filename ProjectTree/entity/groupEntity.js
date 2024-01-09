@@ -1,9 +1,9 @@
 import { DataTypes } from "sequelize";
 import SequelizeConfig from "../config/sequelizeConfig.js";
-import { Logger } from "../config/winstonConfig.js";
+import { LOGGER } from "../config/winstonConfig.js";
 
-const DefineGroup = () => {
-   const funcName = "[DefineGroup]";
+const defineGroup = () => {
+   const funcName = "[defineGroup Func]";
    try {
       if (SequelizeConfig === false) {
          Logger.error(`${funcName} - Sequelize Configuration ERROR`);
@@ -123,6 +123,6 @@ const DefineGroup = () => {
    }
 };
 
-const groupEntity = DefineGroup();
+const groupEntity = defineGroup();
 
 export default groupEntity;

@@ -1,8 +1,8 @@
-import Logger from "./winstonConfig.js";
+import LOGGER from "./winstonConfig.js";
 import { SQL_DATABASE, SQL_SERVER, SQL_USER, SQL_PW } from "../utils/constants.js";
 
-export default function buildMsSQLInstance(poolName) {
-   const funcNote = `[buildMsSQLInstance Func] [DatabasePoolName = ${poolName}]`;
+const buildMsSQLInstance = async () => {
+   const funcNote = `[buildMsSQLInstance Func]`;
    try {
       // let SQL_SERVER, SQL_USER, SQL_PW, SQL_DATABASE;
       //
@@ -48,7 +48,10 @@ export default function buildMsSQLInstance(poolName) {
          },
       };
    } catch (err) {
-      Logger.error(`${funcNote} Catching ERROR - ${err}.`);
+      LOGGER.error(`${funcNote} Catching ERROR - ${err}.`);
       return false;
    }
-}
+};
+
+const MssqlConfig = await buildMsSQLInstance();
+export default MssqlConfig;

@@ -1,6 +1,6 @@
 import Moment from "moment";
-import fetchToken from "../service/fetchToken.js";
-import { Logger } from "../config/winstonConfig.js";
+import fetchToken from "../service/tokenService.js";
+import { LOGGER } from "../config/winstonConfig.js";
 import { INFO_FOLDER } from "../utils/constants.js";
 import { readFilePattern, writeFilePattern } from "./fileControllers/index.js";
 
@@ -52,7 +52,7 @@ const isTokenValid = (tokenInfo) => {
 
       return timeDiff <= 23 ? { isValid: true, token: access_token } : { isValid: false, token: "" };
    } catch (err) {
-      Logger.error(`[isTokenValid Func] - ${err}.`);
+      Logger.error(`[isTokenValid Func] Catching ERROR - ${err}.`);
       return false;
    }
 };

@@ -1,4 +1,4 @@
-import { Logger } from "../config/winstonConfig.js";
+import { LOGGER } from "../config/winstonConfig.js";
 import { fetchGroup } from "../service/lookupsService.js";
 import groupEntity from "../entity/groupEntity.js";
 import groupMapper from "../mapper/groupMapper.js";

@@ -38,6 +38,6 @@ const customizeLog = (category) => {
    });
 };
 
-const Logger = customizeLog();
+const LOGGER = customizeLog();
 
-export default Logger;
+export default LOGGER;

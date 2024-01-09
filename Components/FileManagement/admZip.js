@@ -20,7 +20,7 @@ const zipDataStorageFiles = async (category) => {
       });
 
       if (filteredResult.length === 0) {
-         Logger.info(`There is no data storage - ${category} files for ${backwardSevenDaysTimestamp} to be zipped.`);
+         LOGGER.info(`There is no data storage - ${category} files for ${backwardSevenDaysTimestamp} to be zipped.`);
          return true;
       }
 
@@ -35,7 +35,7 @@ const zipDataStorageFiles = async (category) => {
       });
       return true;
    } catch (err) {
-      Logger.error(`zipDataStorageFiles Func ${err}. Category = ${category}`);
+      LOGGER.error(`zipDataStorageFiles Func ${err}. Category = ${category}`);
       return false;
    }
 };
