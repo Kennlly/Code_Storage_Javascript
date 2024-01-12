@@ -104,7 +104,7 @@ const handleFlowData = async (data) => {
    }
 };
 
-export default async function createFlowNoti() {
+export default async function createFlowAggrNoti() {
    const funcName = "[createFlowNoti Func]";
    try {
       const topics = await createFlowTopic();
@@ -113,12 +113,12 @@ export default async function createFlowNoti() {
          return false;
       }
 
-      return createNoti("flow", topics, handleFlowData);
+      return createNoti("flowAggr", topics, handleFlowData);
    } catch (err) {
       LOGGER.error(`${funcName} Catching ERROR - ${err}.`);
       return false;
    }
 }
 
-// const result = createFlowNoti();
+// const result = createFlowAggrNoti();
 // console.log("result: ", result);
