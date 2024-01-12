@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import { SQL_DATABASE, SQL_PW, SQL_SERVER, SQL_USER, SQL_PORT } from "../utils/constants.js";
-import { LOGGER } from "./winstonConfig.js";
+import LOGGER from "./winstonConfig.js";
 
 const buildSequelizeInstance = async () => {
    try {
@@ -9,7 +9,7 @@ const buildSequelizeInstance = async () => {
          dialect: "mssql",
          port: SQL_PORT,
          timezone: "Eastern Standard Time",
-         // logging: (msg) => generalLogger.debug(msg),
+         // logging: (msg) => LOGGER.debug(msg),
          logging: false,
          define: {
             schema: "dbo",
@@ -29,13 +29,16 @@ const buildSequelizeInstance = async () => {
             idle: 300000,
             acquire: 300000,
          },
+         retry: {
+            max: 3,
+         },
       });
 
       await instance.authenticate();
 
       return instance;
    } catch (err) {
-      Logger.error(`[buildSequelizeInstance Func] Catching ERROR - ${err}`);
+      LOGGER.error(`[buildSequelizeInstance Func] Catching ERROR - ${err}`);
       return false;
    }
 };

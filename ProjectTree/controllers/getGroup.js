@@ -1,4 +1,4 @@
-import { LOGGER } from "../config/winstonConfig.js";
+import LOGGER from "../config/winstonConfig.js";
 import { fetchGroup } from "../service/lookupsService.js";
 import groupEntity from "../entity/groupEntity.js";
 import groupMapper from "../mapper/groupMapper.js";
@@ -11,23 +11,23 @@ export default async function getGroup() {
       const data = await fetchGroup();
       if (data === false) return false;
 
-      // Step 2:
+      // Step 2: Get the mapped data and entity
       const groupData = groupMapper(data);
       if (groupData === false) return false;
       if (groupData.length === 0) {
-         Logger.error(`${funcName} - Unexpected EMPTY extracted data!`);
+         LOGGER.error(`${funcName} - Unexpected EMPTY extracted data!`);
          return false;
       }
 
       if (groupEntity === false) {
-         Logger.error(`${funcName} - Sequelize Configuration ERROR`);
+         LOGGER.error(`${funcName} - Sequelize Configuration ERROR`);
          return false;
       }
 
-      // Step 3:
+      // Step 3: Insert / Update to database
       await Promise.all(
-         groupData.map((data) =>
-            groupEntity.upsert(data, {
+         groupData.map((record) =>
+            groupEntity.upsert(record, {
                updateOnDuplicate: [
                   "group_name",
                   "description",
@@ -46,10 +46,10 @@ export default async function getGroup() {
          ),
       );
 
-      Logger.info(`${funcName} - Completed!`);
+      LOGGER.info(`${funcName} - Completed!`);
       return true;
    } catch (err) {
-      Logger.error(`${funcName} Catching ERROR - ${err}`);
+      LOGGER.error(`${funcName} Catching ERROR - ${err}`);
       return false;
    }
 }

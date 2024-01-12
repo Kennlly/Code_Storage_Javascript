@@ -1,11 +1,13 @@
 import Moment from "moment";
-import { LOGGER } from "../config/winstonConfig.js";
+import LOGGER from "../config/winstonConfig.js";
 
 export default function groupMapper(payload) {
-   const funcNote = `[groupMapper Func] [payload = ${JSON.stringify(payload)}]`;
+   const funcName = "[groupMapper Func]";
+   const funcArgus = `[payload = ${JSON.stringify(payload)}]`;
+
    try {
       if (!payload) {
-         Logger.error("[groupMapper Func] - Unexpected empty payload!");
+         LOGGER.error(`${funcName} - Unexpected empty payload!`);
          return false;
       }
 
@@ -25,7 +27,7 @@ export default function groupMapper(payload) {
          stage_time: Moment().format("YYYY-MM-DD HH:mm Z"),
       }));
    } catch (err) {
-      Logger.error(`${funcNote} Catching ERROR - ${err}`);
+      LOGGER.error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
       return false;
    }
 }

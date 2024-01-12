@@ -1,12 +1,12 @@
 import { DataTypes } from "sequelize";
 import SequelizeConfig from "../config/sequelizeConfig.js";
-import { LOGGER } from "../config/winstonConfig.js";
+import LOGGER from "../config/winstonConfig.js";
 
 const defineGroup = () => {
    const funcName = "[defineGroup Func]";
    try {
       if (SequelizeConfig === false) {
-         Logger.error(`${funcName} - Sequelize Configuration ERROR`);
+         LOGGER.error(`${funcName} - Sequelize Configuration ERROR`);
          return false;
       }
 
@@ -119,7 +119,8 @@ const defineGroup = () => {
          },
       });
    } catch (err) {
-      Logger.error(`[DefineGroup Func] Catching ERROR - ${err}`);
+      LOGGER.error(`[DefineGroup Func] Catching ERROR - ${err}`);
+      return false;
    }
 };
 

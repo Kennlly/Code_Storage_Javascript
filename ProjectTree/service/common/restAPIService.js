@@ -30,6 +30,8 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
       case "POST":
          request.data = queryBody;
          break;
+      case "DELETE":
+         break;
       default:
          LOGGER.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
          return false;
@@ -49,12 +51,12 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
 
          return await AxiosConfig(request);
       } catch (err) {
-         if (typeof err === "string") {
+         const { responseCode, statusText, description } = err;
+
+         if (!responseCode) {
             LOGGER.error(`${funcName} ${funcArgus} - ${err}`);
             return false;
          }
-
-         const { responseCode, statusText, description } = err;
 
          if (responseCode === 429) {
             // Known issue - Calling apis too frequently

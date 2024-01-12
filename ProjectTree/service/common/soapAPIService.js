@@ -38,12 +38,12 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
       try {
          return await AxiosConfig(request);
       } catch (err) {
-         if (typeof err === "string") {
-            Logger.error(`${funcName} ${funcArgus} - ${err}`);
+         const { responseCode, statusText, description } = err;
+
+         if (!responseCode) {
+            LOGGER.error(`${funcName} ${funcArgus} - ${err}`);
             return false;
          }
-
-         const { responseCode, statusText, description } = err;
 
          let fullErrMsg = `Response Code = ${responseCode}; Status Text = ${statusText}`;
          if (description) fullErrMsg += `; Description = ${description}`;

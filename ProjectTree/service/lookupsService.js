@@ -1,6 +1,4 @@
-import { GENESYS_ENDPOINT_URL } from "../utils/constants.js";
-import restGETPattern from "../../old_Components/nodefetch_restGETPattern.js";
-import { LOGGER } from "../config/winstonConfig.js";
+import LOGGER from "../config/winstonConfig.js";
 import restAPIService from "./common/restAPIService.js";
 
 const fetchLookupPattern = async (apiEndpoint) => {
@@ -15,13 +13,13 @@ const fetchLookupPattern = async (apiEndpoint) => {
       try {
          const data = await restAPIService("GET", currentUri, null, null);
          if (data === false) {
-            Logger.error(`${funcName} ${funcArgus} - Getting data from Genesys ERROR!`);
+            LOGGER.error(`${funcName} ${funcArgus} - Getting data from Genesys ERROR!`);
             return false;
          }
 
          const partial = data["entities"];
          if (JSON.stringify(data) === "{}" || !partial || partial.length === 0) {
-            Logger.error(`${funcName} ${funcArgus} - Unexpected EMPTY payload!`);
+            LOGGER.error(`${funcName} ${funcArgus} - Unexpected EMPTY payload!`);
             return false;
          }
 
@@ -33,7 +31,7 @@ const fetchLookupPattern = async (apiEndpoint) => {
 
          currentUri = nextUri;
       } catch (err) {
-         Logger.error(`${funcName} ${funcArgus} Catching ERROR - ${err}.`);
+         LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}.`);
          return false;
       }
    }
@@ -43,10 +41,19 @@ export const fetchGroup = async () => {
    try {
       return await fetchLookupPattern("/api/v2/groups?pageSize=500");
    } catch (err) {
-      Logger.error(`[fetchGroup Func] Catching ERROR - ${err}.`);
+      LOGGER.error(`[fetchGroup Func] Catching ERROR - ${err}.`);
       return false;
    }
 };
 
-// const results = await groupService();
-// console.log("groupResults: ", results);
+export const fetchFlow = async () => {
+   try {
+      return await fetchLookupPattern("/api/v2/flows?pageSize=500");
+   } catch (err) {
+      LOGGER.error(`[fetchFlow Func] Catching ERROR - ${err}.`);
+      return false;
+   }
+};
+
+// const results = await fetchFlow();
+// console.log("flowResults: ", results);
