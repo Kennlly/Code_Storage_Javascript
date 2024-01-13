@@ -113,7 +113,23 @@ export default async function createFlowAggrNoti() {
          return false;
       }
 
-      return createNoti("flowAggr", topics, handleFlowData);
+      // 1000 topics for each WebSocket
+      let separatedTopics = [];
+      let temp = [];
+      for (let i = 0; i < topics.length; i++) {
+         temp.push(topics[i]);
+
+         if (temp.length === 1000) {
+            separatedTopics.push(temp);
+            temp = [];
+         }
+
+         if (i === topics.length - 1 && temp.length !== 0) separatedTopics.push(temp);
+      }
+
+      for (const topics of separatedTopics) {
+         createNoti("flowAggr", topics, handleFlowData);
+      }
    } catch (err) {
       LOGGER.error(`${funcName} Catching ERROR - ${err}.`);
       return false;
