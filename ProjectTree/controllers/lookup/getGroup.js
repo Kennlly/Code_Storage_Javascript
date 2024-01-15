@@ -1,10 +1,10 @@
 import Moment from "moment";
-import LOGGER from "../config/winstonConfig.js";
-import { fetchGroup } from "../service/lookupsService.js";
-import groupEntity from "../entity/groupEntity.js";
-import groupMapper from "../mapper/groupMapper.js";
-import { writeFile } from "../utils/fileManagement.js";
-import { INFO_FOLDER } from "../utils/constants.js";
+import LOGGER from "../../config/winstonConfig.js";
+import { fetchGroup } from "../../service/lookupsService.js";
+import groupEntity from "../../entity/groupEntity.js";
+import groupMapper from "../../mapper/groupMapper.js";
+import { writeFile } from "../../utils/fileManagement.js";
+import { INFO_FOLDER } from "../../utils/constants.js";
 
 export default async function getGroup() {
    const funcName = `[groupController Func]`;

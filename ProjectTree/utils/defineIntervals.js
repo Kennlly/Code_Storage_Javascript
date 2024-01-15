@@ -33,18 +33,9 @@ export default function defineIntervals(
          return false;
       }
 
-      if (diff <= requiredIntervalInMin) {
-         const momentEndTime = momentStartTimestamp.clone().add(requiredIntervalInMin, "minute");
-         // Note: one scenario is UTC from the database, but it actually means the EST
-         const startStr = momentStartTimestamp.utcOffset(Moment().utcOffset()).format(outputDatetimeStrPattern);
-         const endStr = momentEndTime.utcOffset(Moment().utcOffset()).format(outputDatetimeStrPattern);
-
-         return [`${startStr}/${endStr}`];
-      }
-
       let leftMoment = momentStartTimestamp.clone();
-
       let definedIntervals = [];
+
       while (leftMoment < momentEndTimestamp) {
          const tempRightMoment = leftMoment.clone().add(requiredIntervalInMin, "minute");
          const rightMoment = tempRightMoment < momentEndTimestamp ? tempRightMoment : momentEndTimestamp;
