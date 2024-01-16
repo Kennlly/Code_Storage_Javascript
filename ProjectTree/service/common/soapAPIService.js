@@ -1,17 +1,11 @@
 import { CALABRIO_RTA_ENDPOINT_URL, INFO_FOLDER } from "../../utils/constants.js";
 import { setTimeout } from "timers/promises";
-import { LOGGER } from "../../config/winstonConfig.js";
+import LOGGER from "../../config/winstonConfig.js";
 import AxiosConfig from "../../config/axiosConfig.js";
-import { deleteFile } from "../../utils/fileManagement.js";
 
 export default async function soapAPIService(requestMethod, endpoint, soapAction, queryBody) {
    const funcName = "[soapAPIService Func]";
    const funcArgus = `[Rest Method = ${requestMethod}; API Endpoint = ${endpoint}; Soap Action = ${soapAction}; Query body = ${queryBody}]`;
-
-   if (AxiosConfig === false) {
-      Logger.error(`${funcName} - Axios Configuration ERROR!`);
-      return false;
-   }
 
    let retryCounter = 1;
 
@@ -30,7 +24,7 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
          request.data = queryBody;
          break;
       default:
-         Logger.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
+         LOGGER.error(`${funcName} ${funcArgus} - Unknown "Request Method"`);
          return false;
    }
 
@@ -48,7 +42,7 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
          let fullErrMsg = `Response Code = ${responseCode}; Status Text = ${statusText}`;
          if (description) fullErrMsg += `; Description = ${description}`;
 
-         Logger.error(`${funcName} - ${fullErrMsg}. Retrying on ${retryCounter} / 3.`);
+         LOGGER.error(`${funcName} - ${fullErrMsg}. Retrying on ${retryCounter} / 3.`);
 
          switch (responseCode) {
             case 400:
@@ -65,6 +59,6 @@ export default async function soapAPIService(requestMethod, endpoint, soapAction
       }
    }
 
-   Logger.error(`${funcName} ${funcArgus} - ERROR After 3 Times Retries!`);
+   LOGGER.error(`${funcName} ${funcArgus} - ERROR After 3 Times Retries!`);
    return false;
 }

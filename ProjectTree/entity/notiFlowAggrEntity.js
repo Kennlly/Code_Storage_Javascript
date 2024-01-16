@@ -1,15 +1,9 @@
 import { DataTypes } from "sequelize";
 import SequelizeConfig from "../config/sequelizeConfig.js";
-import LOGGER from "../config/winstonConfig.js";
 
 const defineNotiFlowAggr = () => {
    const funcName = "[defineNotiFlowAggr Func]";
    try {
-      if (SequelizeConfig === false) {
-         LOGGER.error(`${funcName} - Sequelize Configuration ERROR`);
-         return false;
-      }
-
       return SequelizeConfig.define("Gen_Noti_FlowAggregate_STG", {
          id: {
             type: DataTypes.STRING(36),
@@ -74,8 +68,7 @@ const defineNotiFlowAggr = () => {
          },
       });
    } catch (err) {
-      LOGGER.error(`[DefineGroup Func] Catching ERROR - ${err}`);
-      return false;
+      throw new Error(`${funcName} Catching ERROR - ${err}`);
    }
 };
 

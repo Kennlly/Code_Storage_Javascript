@@ -1,7 +1,7 @@
 import Axios from "axios";
-import { GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET } from "../utils/constants.js";
+import { GENESYS_CLIENT_ID, GENESYS_CLIENT_SECRET } from "../../utils/constants.js";
 import { setTimeout } from "timers/promises";
-import LOGGER from "../config/winstonConfig.js";
+import LOGGER from "../../config/winstonConfig.js";
 
 export default async function fetchToken() {
    const funcName = "[tokenService Func]";

@@ -11,11 +11,6 @@ export default async function restAPIService(requestMethod, endpoint, params, qu
       params,
    )}; Query body = ${JSON.stringify(queryBody)}]`;
 
-   if (AxiosConfig === false) {
-      LOGGER.error(`${funcName} - Axios Configuration ERROR!`);
-      return false;
-   }
-
    const request = {
       method: requestMethod,
       baseURL: GENESYS_ENDPOINT_URL,

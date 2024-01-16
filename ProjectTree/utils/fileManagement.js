@@ -5,26 +5,24 @@ import LOGGER from "../config/winstonConfig.js";
 
 export const writeFile = async (filePath, category, content) => {
    const funcName = "[writeFile Func]";
-   const funcArgus = `[File Path = ${filePath}; Category = ${category}; Content = ${JSON.stringify(content)}]`;
+   const funcArgus = `[File Path = ${filePath}; Category = ${category}; Content = ${JSON.stringify(content, null, 3)}]`;
 
    const fullFilePath = `${filePath}.${category}`;
 
    //handle writing txt or json file
    if (category !== "json" && category !== "txt") {
-      LOGGER.error(`${funcName} - File category ERROR! Category = ${category}`);
-      return false;
+      throw new Error(`${funcName} - File Category ERROR! Category = ${category}`);
    }
 
    try {
-      const fileContent = category === "json" ? JSON.stringify(content, null, 2) : content;
+      const fileContent = category === "json" ? JSON.stringify(content, null, 3) : content;
 
       await FS.writeFile(fullFilePath, fileContent);
 
       LOGGER.info(`${funcName} - Writing "${fullFilePath}" Succeed!`);
       return true;
    } catch (err) {
-      LOGGER.error(`${funcName} Catching ERROR - ${err}\n${funcArgus} `);
-      return false;
+      throw new Error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
    }
 };
 
@@ -44,8 +42,7 @@ export const readFile = async (filePath, category) => {
 
    //handle reading txt or json file
    if (category !== "json" && category !== "txt") {
-      LOGGER.error(`${funcName} - File category ERROR! Category = ${category}`);
-      return false;
+      throw new Error(`${funcName} - File Category ERROR! Category = ${category}`);
    }
 
    const fullFilePath = `${filePath}.${category}`;
@@ -55,41 +52,34 @@ export const readFile = async (filePath, category) => {
 
       // File does NOT Exist
       if (!isTargetFileExist) {
-         if (category === "json") return (await writeFile(filePath, "json", {})) ? {} : false;
+         if (category === "json") {
+            await writeFile(filePath, "json", {});
+            return {};
+         }
 
-         return (await writeFile(filePath, "txt", "")) ? "" : false;
+         await writeFile(filePath, "txt", "");
+         return "";
       }
 
       // File Exists
       const data = await FS.readFile(fullFilePath, "utf-8");
 
-      if (category === "txt") return data;
-
-      try {
-         return JSON.parse(data);
-      } catch (err) {
-         LOGGER.error(`${funcName} - Parsing JSON ERROR. ${funcArgus}`);
-         return {};
-      }
+      return category === "txt" ? data : JSON.parse(data);
    } catch (err) {
-      LOGGER.error(`${funcName} Catching ERROR - ${err}. ${funcArgus}`);
-      return false;
+      throw new Error(`${funcName} Catching ERROR - ${err}. ${funcArgus}`);
    }
 };
 
 export const appendFile = async (filePath, content) => {
    const funcName = "[appendFile Func]";
-   const funcArgus = `[File Path = ${filePath}; Content = ${JSON.stringify(content)}]`;
+   const funcArgus = `[File Path = ${filePath}; Content = ${JSON.stringify(content, null, 3)}]`;
 
    try {
       const fullPath = `${filePath}.txt`;
 
       await FS.appendFile(fullPath, content);
-
-      return true;
    } catch (err) {
-      LOGGER.error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
-      return false;
+      throw new Error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
    }
 };
 
@@ -101,10 +91,8 @@ export const moveFile = async (sourceFilePath, destinationFilePath) => {
       await FS.rename(sourceFilePath, destinationFilePath);
 
       LOGGER.info(`${funcName} ${funcArgus} Succeed!`);
-      return true;
    } catch (err) {
-      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
-      return false;
+      throw new Error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
    }
 };
 
@@ -116,10 +104,8 @@ export const copyFile = async (sourceFilePath, destinationFilePath) => {
       await FS.copyFile(sourceFilePath, destinationFilePath);
 
       LOGGER.info(`${funcName} ${funcArgus} Succeed!`);
-      return true;
    } catch (err) {
-      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
-      return false;
+      throw new Error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
    }
 };
 
@@ -131,10 +117,8 @@ export const deleteFile = async (filePath) => {
       await FS.unlink(filePath);
 
       LOGGER.info(`${funcName} ${funcArgus} Succeed!`);
-      return true;
    } catch (err) {
-      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
-      return false;
+      throw new Error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
    }
 };
 
@@ -145,8 +129,7 @@ export const getFileList = async (folderPath) => {
    try {
       return await FS.readdir(folderPath);
    } catch (err) {
-      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
-      return false;
+      throw new Error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
    }
 };
 

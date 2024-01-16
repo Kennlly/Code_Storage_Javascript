@@ -33,8 +33,8 @@ const buildAxiosInstance = () => {
 
                   return true;
                default:
-                  LOGGER.error(`${funcName} - Unknown REST Method: ${method} ERROR!`);
-                  return false;
+                  LOGGER.warn(`${funcName} - Unknown REST Method: ${method} ERROR!`);
+                  return true;
             }
          },
          (error) => {
@@ -54,8 +54,7 @@ const buildAxiosInstance = () => {
 
       return instance;
    } catch (err) {
-      LOGGER.error(`[buildAxiosInstance Func] Catching ERROR - ${err.toString()}`);
-      return false;
+      throw new Error(`${funcName} Catching ERROR - ${err.toString()}`);
    }
 };
 

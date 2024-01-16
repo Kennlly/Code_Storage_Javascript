@@ -1,23 +1,6 @@
 import Moment from "moment";
 import LOGGER from "../../config/winstonConfig.js";
-import restAPIService from "../../service/common/restAPIService.js";
-
-const getTotalHits = async (momentStart, momentEnd) => {
-   const funcName = "[getTotalHits Func]";
-   const funcArgus = `[Moment Start Time = ${momentStart}; Moment End Time = ${momentEnd}]`;
-   const url = "/api/v2/analytics/conversations/details/query";
-
-   const startStr = momentStart.format("YYYY-MM-DDTHH:mm[Z]");
-   const endStr = momentEnd.format("YYYY-MM-DDTHH:mm[Z]");
-   const apiQuery = {
-      interval: `${startStr}/${endStr}`,
-   };
-
-   const data = await restAPIService("POST", url, null, apiQuery);
-   if (data === false) throw new Error(`${funcName} - Getting API Response ERROR! ${funcArgus}`);
-
-   return JSON.stringify(data) === "{}" ? 0 : data["totalHits"];
-};
+import { fetchTotalHits } from "../../service/restConversation/conversationDetailService.js";
 
 export default async function defineAPIQueryIntervals(initialInterval) {
    const funcName = "[defineAPIQueryIntervals Func]";
@@ -52,7 +35,7 @@ export default async function defineAPIQueryIntervals(initialInterval) {
       let totalHits;
 
       diff = momentEndTimestamp.diff(momentStartTimestamp, "day");
-      if (diff <= 7) totalHits = await getTotalHits(momentStartTimestamp, momentEndTimestamp);
+      if (diff <= 7) totalHits = await fetchTotalHits(momentStartTimestamp, momentEndTimestamp);
 
       LOGGER.warn(`${funcName} - ${funcArgus} Total Hits = ${totalHits}.`);
 
@@ -63,7 +46,7 @@ export default async function defineAPIQueryIntervals(initialInterval) {
          const greedyMomentEnd = tempMomentStart.clone().add(7, "day");
          let tempMomentEnd = greedyMomentEnd < momentEndTimestamp ? greedyMomentEnd : momentEndTimestamp;
 
-         totalHits = await getTotalHits(tempMomentStart, tempMomentEnd);
+         totalHits = await fetchTotalHits(tempMomentStart, tempMomentEnd);
 
          while (totalHits >= 100000) {
             diff = tempMomentEnd.diff(tempMomentStart, "minute");
@@ -74,7 +57,7 @@ export default async function defineAPIQueryIntervals(initialInterval) {
             while (totalHits >= 200000) {
                diffFormula = Math.round(diff / 2);
                tempMomentEnd = tempMomentStart.clone().add(diffFormula, "minute");
-               totalHits = await getTotalHits(tempMomentStart, tempMomentEnd);
+               totalHits = await fetchTotalHits(tempMomentStart, tempMomentEnd);
                diff = tempMomentEnd.diff(tempMomentStart, "minute");
             }
 
@@ -82,7 +65,7 @@ export default async function defineAPIQueryIntervals(initialInterval) {
             while (totalHits >= 100000) {
                diffFormula = Math.round(diff - 120);
                tempMomentEnd = tempMomentStart.clone().add(diffFormula, "minute");
-               totalHits = await getTotalHits(tempMomentStart, tempMomentEnd);
+               totalHits = await fetchTotalHits(tempMomentStart, tempMomentEnd);
                diff = tempMomentEnd.diff(tempMomentStart, "minute");
             }
          }
@@ -90,7 +73,7 @@ export default async function defineAPIQueryIntervals(initialInterval) {
          const startStr = tempMomentStart.format("YYYY-MM-DDTHH:mm[Z]");
          const endStr = tempMomentEnd.format("YYYY-MM-DDTHH:mm[Z]");
          definedIntervals.push(`${startStr}/${endStr}`);
-         LOGGER.warn(`${funcName} - Sub Interval = ${startStr}/${endStr}; Total Hits = ${totalHits}.`);
+         LOGGER.debug(`${funcName} - Sub Interval = ${startStr}/${endStr}; Total Hits = ${totalHits}.`);
 
          tempMomentStart = tempMomentEnd;
       }

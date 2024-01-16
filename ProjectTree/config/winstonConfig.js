@@ -11,31 +11,37 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
 });
 
 const customizeLog = (category) => {
-   // const customizeDir = `${LOG_FOLDER}${category}${Path.sep}`;
-   const customizeDir = `${LOG_FOLDER}${Path.sep}`;
-   const transport = new dailyRotateFile({
-      dirname: customizeDir,
-      filename: "%DATE%.log",
-      datePattern: "YYYY-MM-DD",
-   });
+   const funcName = "[customizeLog Func]";
 
-   return createLogger({
-      level: "debug",
-      format: combine(timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSS" }), format.errors({ stack: true }), logFormat),
-      transports: [
-         transport,
-         new transports.Console({
-            format: combine(
-               format.colorize({
-                  colors: { warn: "magenta", error: "bold red cyanBG" },
-               }),
-               timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-               format.errors({ stack: true }),
-               logFormat,
-            ),
-         }),
-      ],
-   });
+   try {
+      // const customizeDir = `${LOG_FOLDER}${category}${Path.sep}`;
+      const customizeDir = `${LOG_FOLDER}${Path.sep}`;
+      const transport = new dailyRotateFile({
+         dirname: customizeDir,
+         filename: "%DATE%.log",
+         datePattern: "YYYY-MM-DD",
+      });
+
+      return createLogger({
+         level: "debug",
+         format: combine(timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSS" }), format.errors({ stack: true }), logFormat),
+         transports: [
+            transport,
+            new transports.Console({
+               format: combine(
+                  format.colorize({
+                     colors: { warn: "magenta", error: "bold red cyanBG" },
+                  }),
+                  timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+                  format.errors({ stack: true }),
+                  logFormat,
+               ),
+            }),
+         ],
+      });
+   } catch (err) {
+      throw new Error(`${funcName} Catching ERROR - ${err}.`);
+   }
 };
 
 const LOGGER = customizeLog();

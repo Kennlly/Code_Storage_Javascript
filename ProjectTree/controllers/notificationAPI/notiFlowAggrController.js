@@ -49,7 +49,7 @@ const createFlowTopic = async () => {
    try {
       let localFileData = await readFile(`${INFO_FOLDER}flowInfo`, "json");
 
-      if (localFileData === false || JSON.stringify(localFileData) === "{}") {
+      if (JSON.stringify(localFileData) === "{}") {
          const refreshResult = await getFlow();
          if (refreshResult === false) {
             LOGGER.error(`${funcName} - Refreshing Flow Info ERROR!`);
@@ -84,11 +84,6 @@ const handleFlowData = async (data) => {
          return false;
       }
 
-      if (notiFlowAggrEntity === false) {
-         LOGGER.error(`${funcName} - Sequelize Configuration ERROR`);
-         return false;
-      }
-
       await Promise.all(
          notiFlowAggrData.map((record) =>
             notiFlowAggrEntity.upsert(record, {
@@ -105,11 +100,11 @@ const handleFlowData = async (data) => {
 };
 
 export default async function createFlowAggrNoti() {
-   const funcName = "[createFlowNoti Func]";
+   const funcName = "[createFlowAggrNoti Func]";
    try {
       const topics = await createFlowTopic();
       if (topics === false) {
-         LOGGER.error(`${funcName} - Creating Flow Topic ERROR!`);
+         LOGGER.error(`${funcName} - Creating Flow Topics ERROR!`);
          return false;
       }
 
@@ -136,5 +131,5 @@ export default async function createFlowAggrNoti() {
    }
 }
 
-// const result = createFlowAggrNoti();
+// const result = await getFlow();
 // console.log("result: ", result);

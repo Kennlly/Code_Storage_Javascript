@@ -1,5 +1,5 @@
 import Moment from "moment";
-import fetchToken from "../service/tokenService.js";
+import fetchToken from "../service/common/tokenService.js";
 import LOGGER from "../config/winstonConfig.js";
 import { INFO_FOLDER } from "../utils/constants.js";
 import { readFile, writeFile } from "../utils/fileManagement.js";
@@ -10,12 +10,7 @@ export default async function getToken() {
    try {
       // Get token from local file
       const localTokenInfo = await readFile(`${INFO_FOLDER}genesysToken`, "json");
-      if (localTokenInfo === false) {
-         LOGGER.error(`${funcName} - Get the local token info ERROR!`);
-         return false;
-      }
 
-      // If local token info available, check if it is valid
       const { isValid, token } = isTokenValid(localTokenInfo);
       if (isValid) return token;
 
@@ -27,11 +22,7 @@ export default async function getToken() {
       }
 
       newToken.createAt = Moment().format("YYYY-MM-DD HH:mm");
-      const writingResult = await writeFile(`${INFO_FOLDER}genesysToken`, "json", newToken);
-      if (writingResult === false) {
-         LOGGER.error(`${funcName} - Writing new token to local ERROR!`);
-         return false;
-      }
+      await writeFile(`${INFO_FOLDER}genesysToken`, "json", newToken);
 
       return newToken["access_token"];
    } catch (err) {
@@ -52,8 +43,7 @@ const isTokenValid = (tokenInfo) => {
 
       return timeDiff <= 23 ? { isValid: true, token: access_token } : { isValid: false, token: "" };
    } catch (err) {
-      LOGGER.error(`[isTokenValid Func] Catching ERROR - ${err}.`);
-      return false;
+      throw new Error(`[isTokenValid Func] Catching ERROR - ${err}.`);
    }
 };
 

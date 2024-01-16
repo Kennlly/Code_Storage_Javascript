@@ -1,15 +1,9 @@
 import { DataTypes } from "sequelize";
 import SequelizeConfig from "../config/sequelizeConfig.js";
-import LOGGER from "../config/winstonConfig.js";
 
 const defineGroup = () => {
    const funcName = "[defineGroup Func]";
    try {
-      if (SequelizeConfig === false) {
-         LOGGER.error(`${funcName} - Sequelize Configuration ERROR`);
-         return false;
-      }
-
       return SequelizeConfig.define("Gen_Group", {
          group_id: {
             type: DataTypes.STRING(36),
@@ -119,8 +113,7 @@ const defineGroup = () => {
          },
       });
    } catch (err) {
-      LOGGER.error(`[DefineGroup Func] Catching ERROR - ${err}`);
-      return false;
+      throw new Error(`${funcName} Catching ERROR - ${err}`);
    }
 };
 

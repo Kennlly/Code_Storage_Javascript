@@ -10,10 +10,6 @@ export const refreshChannel = async (name, topics) => {
    try {
       // Step 1: Delete the previous channel Id if exists
       const localRecord = await readFile(`${INFO_FOLDER}${name}ChannelInfo`, "json");
-      if (localRecord === false) {
-         LOGGER.error(`${funcNote} - Reading Local Channel Info ERROR!`);
-         return false;
-      }
 
       const prevChannelId = localRecord["id"];
 
@@ -34,10 +30,7 @@ export const refreshChannel = async (name, topics) => {
       const { connectUri, id } = channelInfo;
 
       // Store channelId in local file
-      const writeResult = await writeFile(`${INFO_FOLDER}${name}ChannelInfo`, "json", channelInfo);
-      if (!writeResult) {
-         LOGGER.warn(`${funcNote} - Writing Channel Info To Local ERROR!`);
-      }
+      await writeFile(`${INFO_FOLDER}${name}ChannelInfo`, "json", channelInfo);
 
       // Step 3: Create subscription
       const isSubscribed = await createSubscription(id, topics);

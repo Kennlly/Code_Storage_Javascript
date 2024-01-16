@@ -22,11 +22,6 @@ export default async function getGroup() {
          return false;
       }
 
-      if (groupEntity === false) {
-         LOGGER.error(`${funcName} - Sequelize Configuration ERROR`);
-         return false;
-      }
-
       // Step 2: Prepare for storing the Ids in a local file and updating database
       let groupIds = [];
       let upsertPromises = [];
@@ -55,10 +50,7 @@ export default async function getGroup() {
 
       // Step 3: Writing local file
       const stageTime = Moment().format("YYYY-MM-DD HH:mm");
-      const writeResult = await writeFile(`${INFO_FOLDER}groupInfo`, "json", { stageTime, groupIds });
-      if (writeResult === false) {
-         LOGGER.warn(`${funcName} - Writing To Local File ERROR!`);
-      }
+      await writeFile(`${INFO_FOLDER}groupInfo`, "json", { stageTime, groupIds });
 
       // Step 4: Insert / Update to database
       await Promise.all(upsertPromises);

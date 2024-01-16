@@ -1,6 +1,5 @@
 import { Sequelize } from "sequelize";
 import { SQL_DATABASE, SQL_PW, SQL_SERVER, SQL_USER, SQL_PORT } from "../utils/constants.js";
-import LOGGER from "./winstonConfig.js";
 
 const buildSequelizeInstance = async () => {
    try {
@@ -38,8 +37,7 @@ const buildSequelizeInstance = async () => {
 
       return instance;
    } catch (err) {
-      LOGGER.error(`[buildSequelizeInstance Func] Catching ERROR - ${err}`);
-      return false;
+      throw new Error(`[buildSequelizeInstance Func] Catching ERROR - ${err}`);
    }
 };
 
