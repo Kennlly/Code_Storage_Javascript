@@ -1,9 +1,9 @@
-import LOGGER from "../../../config/winstonConfig.js";
-import { readFile, writeFile } from "../../../utils/fileManagement.js";
-import { INFO_FOLDER } from "../../../utils/constants.js";
-import { createChannel, createSubscription, removeChannel } from "../../../service/common/notificationAPIService.js";
+import LOGGER from "../../config/winstonConfig.js";
+import { readFile, writeFile } from "../../utils/fileManagement.js";
+import { INFO_FOLDER } from "../../utils/constants.js";
+import { createChannel, createSubscription, removeChannel } from "../api/realtime/channelManagement.js";
 
-export const refreshChannel = async (name, topics) => {
+export default async function refreshChannel(name, topics) {
    const funcNote = `[refreshChannel Func] [Channel Name = ${name}]`;
    const funcArgus = `[Topics = ${JSON.stringify(topics, null, 3)}]`;
 
@@ -22,10 +22,6 @@ export const refreshChannel = async (name, topics) => {
 
       // Step 2: Create a new channel
       const channelInfo = await createChannel();
-      if (channelInfo === false) {
-         LOGGER.error(`${funcNote} - Creating New Channel ERROR!`);
-         return false;
-      }
 
       const { connectUri, id } = channelInfo;
 
@@ -33,15 +29,10 @@ export const refreshChannel = async (name, topics) => {
       await writeFile(`${INFO_FOLDER}${name}ChannelInfo`, "json", channelInfo);
 
       // Step 3: Create subscription
-      const isSubscribed = await createSubscription(id, topics);
-      if (isSubscribed === false) {
-         LOGGER.error(`${funcNote} - Creating Subscription ERROR!\n${funcArgus}`);
-         return false;
-      }
+      await createSubscription(id, topics);
 
       return connectUri;
    } catch (err) {
-      LOGGER.error(`${funcNote} Catching ERROR - ${err}\n${funcArgus}`);
-      return false;
+      throw new Error(`${funcNote} Catching ERROR - ${err}\n${funcArgus}`);
    }
-};
+}

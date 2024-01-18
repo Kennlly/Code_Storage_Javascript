@@ -1,18 +1,22 @@
 import Moment from "moment";
 import LOGGER from "../../config/winstonConfig.js";
-import { fetchGroup } from "../../service/lookupsService.js";
+import { fetchGroup } from "./lookupsService.js";
 import groupEntity from "../../entity/groupEntity.js";
 import groupMapper from "../../mapper/groupMapper.js";
 import { writeFile } from "../../utils/fileManagement.js";
 import { INFO_FOLDER } from "../../utils/constants.js";
+import fetchLookupByCategory from "../api/lookup/fetchLookupByCategory.js";
 
-export default async function getGroup() {
+export default async function getGroups() {
    const funcName = `[groupController Func]`;
 
    try {
       // Step 1: Get data from Genesys
-      const data = await fetchGroup();
-      if (data === false) return false;
+      const data = await fetchLookupByCategory("groups");
+      if (data === false) {
+         LOGGER.error(`${funcName} - Getting Groups From Genesys API ERROR!`);
+         return false;
+      }
 
       // Step 2: Get the mapped data and entity
       const groupData = groupMapper(data);
@@ -63,5 +67,5 @@ export default async function getGroup() {
    }
 }
 
-// const result = await getGroup();
+// const result = await getGroups();
 // console.log("result", result);

@@ -1,21 +1,16 @@
 import WebSocket from "ws";
-import { refreshChannel } from "./refreshChannel.js";
-import LOGGER from "../../../config/winstonConfig.js";
+import refreshChannel from "./refreshChannel.js";
+import LOGGER from "../../config/winstonConfig.js";
 
 export default async function createNoti(name, topics, handleDataFunc) {
-   const funcNote = "[createNoti Func]";
-   const funcArgus = `[Topics = ${JSON.stringify(topics, null, 3)}]`;
+   const funcNote = `[createNoti Func] [Channel Name = ${name}]`;
 
-   try {
-      let isSocketOpen = false;
-      let timeout, wsInstance;
+   let isSocketOpen = false;
+   let timeout, wsInstance;
 
-      const activateChannel = async () => {
+   const activateChannel = async () => {
+      try {
          const channelUri = await refreshChannel(name, topics);
-         if (channelUri === false) {
-            LOGGER.error(`${funcNote} - Refreshing Channel ERROR!\n${funcArgus}`);
-            return;
-         }
 
          wsInstance = new WebSocket(channelUri);
 
@@ -52,40 +47,33 @@ export default async function createNoti(name, topics, handleDataFunc) {
                isSocketOpen = false;
             }, 100000);
 
-            let jsonData;
-            try {
-               jsonData = JSON.parse(data);
-            } catch (err) {
-               LOGGER.error(`${funcNote} - Convert flow-in data into JSON ERROR!`);
-               return;
-            }
-
-            const { topicName, eventBody } = jsonData;
+            const { topicName, eventBody } = JSON.parse(data);
 
             if (topicName === "channel.metadata" && eventBody.message === "WebSocket Heartbeat") return;
 
             return await handleDataFunc(eventBody);
          });
-      };
-
-      await activateChannel();
-
-      // Detect heartbeat, or reconnect
-      const timeInterval = 60 * 1000;
-      setInterval(() => {
-         if (isSocketOpen) return;
-
-         LOGGER.error(`${funcNote} - NO Heartbeat Detected! Reconnecting!`);
-
+      } catch (err) {
+         LOGGER.error(`${funcNote} [activateChannel Sub Func] Catching ERROR - ${err}.`);
          wsInstance.terminate();
-         clearTimeout(timeout);
-         timeout = null;
-         wsInstance = null;
+         await activateChannel();
+      }
+   };
 
-         activateChannel();
-      }, timeInterval);
-   } catch (err) {
-      LOGGER.error(`${funcNote} Catching ERROR - ${err}\n${funcArgus}`);
-      return false;
-   }
+   await activateChannel();
+
+   // Detect heartbeat, or reconnect
+   const timeInterval = 60 * 1000;
+   setInterval(() => {
+      if (isSocketOpen) return;
+
+      LOGGER.error(`${funcNote} - NO Heartbeat Detected! Reconnecting!`);
+
+      wsInstance.terminate();
+      clearTimeout(timeout);
+      timeout = null;
+      wsInstance = null;
+
+      activateChannel();
+   }, timeInterval);
 }

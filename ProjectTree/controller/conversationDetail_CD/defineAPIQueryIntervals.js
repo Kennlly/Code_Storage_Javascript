@@ -1,6 +1,6 @@
 import Moment from "moment";
 import LOGGER from "../../config/winstonConfig.js";
-import { fetchTotalHits } from "../../service/restConversation/conversationDetailService.js";
+import fetchDetailsTotalHits from "../api/historical/fetchDetailsTotalHits.js";
 
 export default async function defineAPIQueryIntervals(initialInterval) {
    const funcName = "[defineAPIQueryIntervals Func]";
@@ -35,9 +35,9 @@ export default async function defineAPIQueryIntervals(initialInterval) {
       let totalHits;
 
       diff = momentEndTimestamp.diff(momentStartTimestamp, "day");
-      if (diff <= 7) totalHits = await fetchTotalHits(momentStartTimestamp, momentEndTimestamp);
+      if (diff <= 7) totalHits = await fetchDetailsTotalHits(momentStartTimestamp, momentEndTimestamp);
 
-      LOGGER.warn(`${funcName} - ${funcArgus} Total Hits = ${totalHits}.`);
+      LOGGER.info(`${funcName} - ${funcArgus} Total Hits = ${totalHits}.`);
 
       let tempMomentStart = momentStartTimestamp.clone();
       let definedIntervals = [];
@@ -46,7 +46,7 @@ export default async function defineAPIQueryIntervals(initialInterval) {
          const greedyMomentEnd = tempMomentStart.clone().add(7, "day");
          let tempMomentEnd = greedyMomentEnd < momentEndTimestamp ? greedyMomentEnd : momentEndTimestamp;
 
-         totalHits = await fetchTotalHits(tempMomentStart, tempMomentEnd);
+         totalHits = await fetchDetailsTotalHits(tempMomentStart, tempMomentEnd);
 
          while (totalHits >= 100000) {
             diff = tempMomentEnd.diff(tempMomentStart, "minute");
@@ -57,7 +57,7 @@ export default async function defineAPIQueryIntervals(initialInterval) {
             while (totalHits >= 200000) {
                diffFormula = Math.round(diff / 2);
                tempMomentEnd = tempMomentStart.clone().add(diffFormula, "minute");
-               totalHits = await fetchTotalHits(tempMomentStart, tempMomentEnd);
+               totalHits = await fetchDetailsTotalHits(tempMomentStart, tempMomentEnd);
                diff = tempMomentEnd.diff(tempMomentStart, "minute");
             }
 
@@ -65,7 +65,7 @@ export default async function defineAPIQueryIntervals(initialInterval) {
             while (totalHits >= 100000) {
                diffFormula = Math.round(diff - 120);
                tempMomentEnd = tempMomentStart.clone().add(diffFormula, "minute");
-               totalHits = await fetchTotalHits(tempMomentStart, tempMomentEnd);
+               totalHits = await fetchDetailsTotalHits(tempMomentStart, tempMomentEnd);
                diff = tempMomentEnd.diff(tempMomentStart, "minute");
             }
          }

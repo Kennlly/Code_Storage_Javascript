@@ -2,7 +2,7 @@
 import fetch from "node-fetch";
 import { LOGGER } from "../ProjectTree/config/winstonConfig.js";
 import { setTimeout } from "timers/promises";
-import getToken from "../ProjectTree/controllers/getToken.js";
+import getValidToken from "../ProjectTree/controller/api/common/getValidToken.js";
 
 export default async function restPOSTPattern(apiEndpoint, apiQueryBody) {
    const funcNote = `apiEndpoint = ${apiEndpoint}, apiQueryBody = ${JSON.stringify(apiQueryBody)}`;
@@ -11,7 +11,7 @@ export default async function restPOSTPattern(apiEndpoint, apiQueryBody) {
    while (true) {
       try {
          // Ensure token is valid
-         const genesysToken = await getToken();
+         const genesysToken = await getValidToken();
          if (genesysToken === false) {
             Logger.error("restPOSTPattern Func - Genesys token validation ERROR!");
             return false;

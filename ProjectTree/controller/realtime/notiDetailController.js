@@ -1,13 +1,13 @@
 import Moment from "moment";
-import { fetchQueue } from "../../service/notiConversation/lookupsService.js";
+import { fetchQueue } from "../../service/fromNotiAPI/lookupsService.js";
 import LOGGER from "../../config/winstonConfig.js";
 import SequelizeConfig from "../../config/sequelizeConfig.js";
 import { INFO_FOLDER } from "../../utils/constants.js";
 import { readFile, writeFile } from "../../utils/fileManagement.js";
 import createNoti from "./createNoti.js";
-import notiConversationMapper from "../../mapper/notiConversation/notiConversationMapper.js";
-import notiConversationIVREntity from "../../entity/notiConversation/notiConversationIVREntity.js";
-import notiConversationContactInfoEntity from "../../entity/notiConversation/notiConversationContactInfoEntity.js";
+import mediaTypeOrientDetailMapper from "../../mapper/mediaTypeOrientDetailMapper.js";
+import notiDetailIVREntity from "../../entity/fromNotiAPI/notiDetailIVREntity.js";
+import notiContactInfoEntity from "../../entity/fromNotiAPI/notiContactInfoEntity.js";
 
 const getQueue = async () => {
    const funcName = "[getQueue Func]";
@@ -47,30 +47,20 @@ const getQueue = async () => {
 
 const createTopics = async () => {
    const funcName = "[createTopics Func]";
-   try {
-      let localFileData = await readFile(`${INFO_FOLDER}queueInfo`, "json");
 
-      if (JSON.stringify(localFileData) === "{}") {
-         const refreshResult = await getQueue();
-         if (refreshResult === false) {
-            LOGGER.error(`${funcName} - Refreshing Queue Info ERROR!`);
-            return false;
-         }
+   let localFileData = await readFile(`${INFO_FOLDER}queueInfo`, "json");
 
-         localFileData = await readFile(`${INFO_FOLDER}queueInfo`, "json");
-      }
+   if (JSON.stringify(localFileData) === "{}") {
+      const refreshResult = await getQueue();
+      if (refreshResult === false) throw new Error(`${funcName} - Refreshing Queue Info ERROR!`);
 
-      const { queueIds } = localFileData;
-      if (queueIds.length === 0) {
-         LOGGER.error(`${funcName} - Unexpected EMPTY Queue Ids From Local File ERROR!`);
-         return false;
-      }
-
-      return queueIds.map((queueId) => ({ id: `v2.routing.queues.${queueId}.conversations` }));
-   } catch (err) {
-      LOGGER.error(`${funcName} Catching ERROR - ${err}.`);
-      return false;
+      localFileData = await readFile(`${INFO_FOLDER}queueInfo`, "json");
    }
+
+   const { queueIds } = localFileData;
+   if (queueIds.length === 0) throw new Error(`${funcName} - Unexpected EMPTY Queue Ids From Local File ERROR!`);
+
+   return queueIds.map((queueId) => ({ id: `v2.routing.queues.${queueId}.conversations` }));
 };
 
 const handleData = async (data) => {
@@ -78,7 +68,7 @@ const handleData = async (data) => {
    const funcArgus = `[Data = ${JSON.stringify(data, null, 3)}]`;
 
    try {
-      const dataObj = notiConversationMapper(data);
+      const dataObj = mediaTypeOrientDetailMapper(data);
       if (dataObj === false) {
          LOGGER.error(`${funcName} - Extracting Payload ERROR From Mapper!`);
          return false;
@@ -88,9 +78,9 @@ const handleData = async (data) => {
       const ivrPromise = handleIVRData(ivrData);
       const contactInfoPromise = handleContactInfoData(contactInfoData);
 
-      await Promise.all([ivrPromise, contactInfoPromise]);
+      const [ivrResult, contactInfoResult] = await Promise.all([ivrPromise, contactInfoPromise]);
 
-      return true;
+      return ivrResult && contactInfoResult;
    } catch (err) {
       LOGGER.error(`${funcName} Catching ERROR - ${err}\n${funcArgus} `);
       return false;
@@ -106,7 +96,7 @@ const handleIVRData = async (data) => {
 
       await Promise.all(
          data.map((record) =>
-            notiConversationIVREntity.upsert(record, {
+            notiDetailIVREntity.upsert(record, {
                updateOnDuplicate: ["connected_time", "end_time", "duration", "attribute_value", "stage_time"]
             })
          )
@@ -128,7 +118,7 @@ const handleContactInfoData = async (data) => {
 
       await Promise.all(
          data.map((record) =>
-            notiConversationContactInfoEntity.upsert(record, {
+            notiContactInfoEntity.upsert(record, {
                updateOnDuplicate: ["stage_time"]
             })
          )
@@ -141,14 +131,10 @@ const handleContactInfoData = async (data) => {
    }
 };
 
-export default async function createConversationNoti() {
-   const funcName = "[createConversationNoti Func]";
+export default async function createDetailNoti() {
+   const funcName = "[createDetailNoti Func]";
    try {
       const topics = await createTopics();
-      if (topics === false) {
-         LOGGER.error(`${funcName} - Creating Conversation Topics ERROR!`);
-         return false;
-      }
 
       // 1000 topics for each WebSocket
       let separatedTopics = [];
@@ -165,7 +151,7 @@ export default async function createConversationNoti() {
       }
 
       for (const topics of separatedTopics) {
-         createNoti("conversation", topics, handleData);
+         await createNoti("conversation", topics, handleData);
       }
    } catch (err) {
       LOGGER.error(`${funcName} Catching ERROR - ${err}.`);
@@ -173,5 +159,5 @@ export default async function createConversationNoti() {
    }
 }
 
-const result = await createConversationNoti();
+// const result = await createDetailNoti();
 // console.log("result: ", result);
