@@ -1,32 +1,24 @@
 import Moment from "moment";
-import LOGGER from "../config/winstonConfig.js";
 
 export default function contactInfoAndDetailsIVRMapper(payload) {
+   if (!payload || payload.length === 0 || JSON.stringify(payload) === "{}") return [];
+
    const funcName = "[contactInfoAndDetailsIVRMapper Func]";
-   const funcArgus = `[payload = ${JSON.stringify(payload, null, 3)}]`;
+   const funcArgus = `[Payload = ${JSON.stringify(payload, null, 3)}]`;
+
+   const conversationId = payload["id"];
+   if (!conversationId) throw new Error(`${funcName} - Unexpected EMPTY Conversation Id ERROR!\n${funcArgus}`);
+
+   const participantData = payload["participants"];
+   if (!participantData || participantData.length === 0) {
+      throw new Error(`${funcName} - Unexpected EMPTY Participants Data ERROR!\n${funcArgus}`);
+   }
+
+   const stageTime = Moment().format("YYYY-MM-DD HH:mm:ss Z");
+   const listIdToId = new Map();
+   let ivrData = [];
 
    try {
-      if (!payload || payload.length === 0 || JSON.stringify(payload) === "{}") {
-         LOGGER.error(`${funcName} - Unexpected EMPTY Payload ERROR!`);
-         return false;
-      }
-
-      const conversationId = payload["id"];
-      if (!conversationId) {
-         LOGGER.error(`${funcName} - Unexpected EMPTY Conversation Id ERROR!\n${funcArgus}`);
-         return false;
-      }
-
-      const participantData = payload["participants"];
-      if (!participantData || participantData.length === 0) {
-         LOGGER.error(`${funcName} - Unexpected EMPTY Participants Data ERROR!\n${funcArgus}`);
-         return false;
-      }
-
-      const stageTime = Moment().format("YYYY-MM-DD HH:mm:ss Z");
-      const listIdToId = new Map();
-      let ivrData = [];
-
       for (const participant of participantData) {
          const attributes = participant["attributes"];
          if (!attributes || JSON.stringify(attributes) === "{}") continue;
@@ -34,7 +26,7 @@ export default function contactInfoAndDetailsIVRMapper(payload) {
          const attributeKeys = Object.keys(attributes);
          for (const key of attributeKeys) {
             const value = attributes[key];
-            if (!value.trim()) continue;
+            if (!value || value === " ") continue;
 
             const ivrObj = {
                conversation_id: conversationId,
@@ -46,7 +38,7 @@ export default function contactInfoAndDetailsIVRMapper(payload) {
                   participant["connectedTime"] && participant["endTime"]
                      ? Moment(participant["endTime"], "YYYY-MM-DDTHH:mm:ss.SSS[Z]").diff(
                           Moment(participant["connectedTime"], "YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
-                          "ms"
+                          "second"
                        )
                      : null,
                attribute_key: key,
@@ -85,8 +77,7 @@ export default function contactInfoAndDetailsIVRMapper(payload) {
 
       return { ivrData, contactInfoData };
    } catch (err) {
-      LOGGER.error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
-      return false;
+      throw new Error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
    }
 }
 

@@ -1,62 +1,59 @@
-import Axios from "axios";
-import Https from "node:https";
+import axios from "axios";
+import https from "node:https";
 import LOGGER from "./winstonConfig.js";
+import Https from "node:https";
 
 const buildAxiosInstance = () => {
    const funcName = "[buildAxiosInstance Func]";
-   try {
-      const instance = Axios.create({
-         timeout: 10000,
-         httpsAgent: new Https.Agent({ rejectUnauthorized: false }),
-      });
+   const instance = axios.create({
+      timeout: 10000,
+      httpsAgent: new Https.Agent({ rejectUnauthorized: false })
+   });
 
-      // intercepting to capture errors
-      instance.interceptors.response.use(
-         (response) => {
-            const {
-               status,
-               statusText,
-               config: { method },
-               data,
-            } = response;
+   // intercepting to capture errors
+   instance.interceptors.response.use(
+      (response) => {
+         const {
+            status,
+            statusText,
+            config: { method },
+            data
+         } = response;
 
-            switch (method) {
-               case "get":
-               case "post":
-                  return data;
-               case "delete":
-                  if (status < 200 || status >= 300) {
-                     LOGGER.warn(
-                        `${funcName} - Unexpected Response: Response Code = ${status}; Status Text = ${statusText}; Method = ${method}`,
-                     );
-                  }
+         switch (method) {
+            case "get":
+            case "post":
+               return data;
+            case "delete":
+               if (status < 200 || status >= 300) {
+                  LOGGER.warn(
+                     `${funcName} - Unexpected Response: Response Code = ${status}; Status Text = ${statusText}; Method = ${method}`
+                  );
+               }
 
-                  return true;
-               default:
-                  LOGGER.warn(`${funcName} - Unknown REST Method: ${method} ERROR!`);
-                  return true;
-            }
-         },
-         (error) => {
-            const errResponse = error["response"];
+               return {};
+            default:
+               LOGGER.warn(`${funcName} - Unknown REST Method: ${method} ERROR!`);
+               return {};
+         }
+      },
+      (error) => {
+         const errResponse = error["response"];
 
-            if (!errResponse) return Promise.reject(error.toString());
+         if (!errResponse) return Promise.reject(error.toString());
 
-            const {
-               data: { message },
-               status,
-               statusText,
-            } = error["response"];
+         const {
+            data: { message },
+            status,
+            statusText
+         } = error["response"];
 
-            return Promise.reject({ responseCode: status, statusText, description: message });
-         },
-      );
+         return Promise.reject({ responseCode: status, statusText, description: message });
+      }
+   );
 
-      return instance;
-   } catch (err) {
-      throw new Error(`${funcName} Catching ERROR - ${err.toString()}`);
-   }
+   return instance;
 };
 
-const AxiosConfig = buildAxiosInstance();
-export default AxiosConfig;
+const axiosConfig = buildAxiosInstance();
+export default axiosConfig;

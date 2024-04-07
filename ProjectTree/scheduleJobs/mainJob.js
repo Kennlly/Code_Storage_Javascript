@@ -25,7 +25,7 @@ if (APP_RUNNING_ENV === "DEV" || APP_RUNNING_ENV === "UAT1" || APP_RUNNING_ENV =
       // await integrateMainDailyJob();
    });
 } else {
-   return new Error("Unknown running environment!");
+   throw new Error("Unknown running environment!");
 }
 
 LOGGER.info(`The ??? Service STARTS!`);

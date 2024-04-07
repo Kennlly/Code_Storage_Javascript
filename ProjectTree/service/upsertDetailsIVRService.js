@@ -1,13 +1,12 @@
 import detailsIVREntity from "../entity/detailsIVREntity.js";
-import LOGGER from "../config/winstonConfig.js";
 
 export default async function upsertDetailsIVRService(data) {
+   if (data.length === 0) return;
+
    const funcName = "[upsertDetailsIVRService Func]";
    const funcArgus = `[Data = ${JSON.stringify(data, null, 3)}]`;
 
    try {
-      if (data.length === 0) return true;
-
       await Promise.all(
          data.map((record) =>
             detailsIVREntity.upsert(record, {
@@ -15,10 +14,7 @@ export default async function upsertDetailsIVRService(data) {
             })
          )
       );
-
-      return true;
    } catch (err) {
-      LOGGER.error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
-      return false;
+      throw new Error(`${funcName} Catching ERROR - ${err}\n${funcArgus}`);
    }
 }

@@ -1,5 +1,5 @@
 import AdmZip from "adm-zip";
-import Moment from "moment";
+import moment from "moment";
 import { promises as FS } from "fs";
 import LOGGER from "../config/winstonConfig.js";
 
@@ -148,7 +148,7 @@ export const zipFolder = async (folderPath, fileExtension) => {
       }
 
       // Filter the files for last month
-      const backwardOneMonthDateStr = Moment().subtract(1, "month").format("YYYY-MM");
+      const backwardOneMonthDateStr = moment().subtract(1, "month").format("YYYY-MM");
       const filteredFileList = fullFileList.filter((fileName) => {
          const fileDateStr = fileName.substring(0, 7);
          const fileDotIdx = fileName.indexOf(".");
