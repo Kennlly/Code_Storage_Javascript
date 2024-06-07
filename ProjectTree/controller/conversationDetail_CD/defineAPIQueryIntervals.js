@@ -1,90 +1,62 @@
-import Moment from "moment";
-import LOGGER from "../../config/winstonConfig.js";
-import fetchDetailsTotalHits from "../api/historical/fetchDetailsTotalHits.js";
+import moment from "moment";
 
-export default async function defineAPIQueryIntervals(initialInterval) {
-   const funcName = "[defineAPIQueryIntervals Func]";
-   const funcArgus = `[Initial Interval = ${initialInterval}]`;
+export const subdivideQueryInterval = async (initialInterval, category) => {
+   const funcName = "[subdivideQueryInterval Func]";
+   const funcArgus = `[Initial Interval = ${initialInterval}; Category = ${category}]`;
 
-   if (!initialInterval) {
-      LOGGER.error(`${funcName} - Missing Required Arguments ERROR! ${funcArgus} `);
-      return false;
+   if (!initialInterval || !category) {
+      throw new Error(`${funcName} ${funcArgus} - Unexpected Empty Parameters ERROR!`);
    }
 
    try {
-      const intervals = initialInterval.split("/");
-      const momentStartTimestamp = Moment.utc(intervals[0], "YYYY-MM-DDTHH:mm[Z]", true);
-      const isStartValid = momentStartTimestamp.isValid();
-      const momentEndTimestamp = Moment.utc(intervals[1], "YYYY-MM-DDTHH:mm[Z]", true);
-      const isEndValid = momentEndTimestamp.isValid();
-      if (!isStartValid || !isEndValid) {
-         LOGGER.error(
-            `${funcName} - Invalid startTime and/or endTime ERROR! Required "YYYY-MM-DDTHH:mm[Z]" Pattern. ${funcArgus}`,
-         );
-         return false;
-      }
-      let diff = momentEndTimestamp.diff(momentStartTimestamp);
-      if (diff <= 0) {
-         LOGGER.error(`${funcName} - End Time is equal or earlier than Start Time ERROR! ${funcArgus}`);
-         return false;
-      }
+      const { momentStartTime, momentEndTime } = validateStartAndEndTime(initialInterval);
 
       // Two conditions:
-      // 1. Not exceed 7 days
-      // 2. Not exceed 100,000 records
-      let totalHits;
+      // 1. Interval does Not exceed 7 days
+      // 2. TotalHits does Not exceed 100,000
+      const getTotalHits = category === "userDetail" ? fetchUserDetailTotalHits : undefined;
 
-      diff = momentEndTimestamp.diff(momentStartTimestamp, "day");
-      if (diff <= 7) totalHits = await fetchDetailsTotalHits(momentStartTimestamp, momentEndTimestamp);
+      let totalHits, diff;
 
-      LOGGER.info(`${funcName} - ${funcArgus} Total Hits = ${totalHits}.`);
+      diff = momentEndTime.diff(momentStartTime, "day");
+      if (diff <= 7) totalHits = await getTotalHits(momentStartTime, momentEndTime);
 
-      let tempMomentStart = momentStartTimestamp.clone();
+      logger.debug(`${funcName} ${funcArgus} - Total Hits = ${totalHits}.`);
+
+      let tempMomentStart = momentStartTime.clone();
       let definedIntervals = [];
 
-      while (tempMomentStart < momentEndTimestamp || totalHits >= 100000) {
-         const greedyMomentEnd = tempMomentStart.clone().add(7, "day");
-         let tempMomentEnd = greedyMomentEnd < momentEndTimestamp ? greedyMomentEnd : momentEndTimestamp;
+      while (tempMomentStart < momentEndTime || totalHits >= 100000) {
+         let tempMomentEnd = tempMomentStart.clone().add(7, "day");
+         tempMomentEnd = tempMomentEnd < momentEndTime ? tempMomentEnd : momentEndTime;
 
-         totalHits = await fetchDetailsTotalHits(tempMomentStart, tempMomentEnd);
+         totalHits = await getTotalHits(tempMomentStart, tempMomentEnd);
 
          while (totalHits >= 100000) {
             diff = tempMomentEnd.diff(tempMomentStart, "minute");
 
-            let diffFormula;
             // Because conversations may overlap multiple intervals, Closer to 100000 can save API calls later
             // If it is greater than 200000, divided the diff by 2
-            while (totalHits >= 200000) {
-               diffFormula = Math.round(diff / 2);
-               tempMomentEnd = tempMomentStart.clone().add(diffFormula, "minute");
-               totalHits = await fetchDetailsTotalHits(tempMomentStart, tempMomentEnd);
-               diff = tempMomentEnd.diff(tempMomentStart, "minute");
+            // If it is between 100000 ~ 200000, minus the end time by 2 hours and try
+            if (totalHits >= 200000) {
+               tempMomentEnd = tempMomentStart.clone().add(Math.round(diff / 2), "minute");
+            } else {
+               tempMomentEnd = tempMomentStart.clone().add(Math.round(diff - 120), "minute");
             }
 
-            // If it is between 100000 ~ 200000, minus the end time by 2 hours and try
-            while (totalHits >= 100000) {
-               diffFormula = Math.round(diff - 120);
-               tempMomentEnd = tempMomentStart.clone().add(diffFormula, "minute");
-               totalHits = await fetchDetailsTotalHits(tempMomentStart, tempMomentEnd);
-               diff = tempMomentEnd.diff(tempMomentStart, "minute");
-            }
+            totalHits = await getTotalHits(tempMomentStart, tempMomentEnd);
          }
 
          const startStr = tempMomentStart.format("YYYY-MM-DDTHH:mm[Z]");
          const endStr = tempMomentEnd.format("YYYY-MM-DDTHH:mm[Z]");
          definedIntervals.push(`${startStr}/${endStr}`);
-         LOGGER.debug(`${funcName} - Sub Interval = ${startStr}/${endStr}; Total Hits = ${totalHits}.`);
+         logger.debug(`${funcName} - Sub Interval = ${startStr}/${endStr}; Total Hits = ${totalHits}.`);
 
          tempMomentStart = tempMomentEnd;
       }
 
       return definedIntervals;
    } catch (err) {
-      LOGGER.error(`${funcName} ${funcArgus} Catching ERROR - ${err}.`);
-      return false;
+      throw new Error(`${funcName} ${funcArgus} Catching ERROR - ${err}`);
    }
-}
-
-// const result = await defineAPIQueryIntervals("2023-08-01T04:00Z/2023-08-15T05:00Z");
-// console.log("result: ", result);
-// console.log("result length: ", result.length);
+};
